@@ -1,0 +1,50 @@
+FIRST-ORDER SAMPLING (20 sentences, seed=42)
+------------------------------------------------------------
+01. the cat sat on the dog ran to the cat sat on the cat sat on the dog ran to the dog sat on the mat
+02. the park
+03. the dog sat on the rug
+04. the park
+05. the cat sat on the cat sat on the mat
+06. the mat
+07. the dog sat on the mat
+08. the rug
+09. the dog sat on the mat
+10. the park
+11. the mat
+12. the mat
+13. the mat
+14. the mat
+15. the rug
+16. the cat sat on the cat sat on the park
+17. the dog ran to the dog sat on the park
+18. the rug
+19. the park
+20. the dog sat on the dog sat on the cat ran to the mat
+
+SECOND-ORDER SAMPLING (20 sentences, seed=42)
+------------------------------------------------------------
+01. the cat sat on the rug
+02. the cat sat on the mat
+03. the dog sat on the mat
+04. the cat sat on the mat
+05. the dog ran to the park
+06. the dog sat on the rug
+07. the cat sat on the mat
+08. the cat sat on the rug
+09. the dog sat on the rug
+10. the dog ran to the park
+11. the dog ran to the park
+12. the cat sat on the rug
+13. the cat ran to the park
+14. the dog sat on the rug
+15. the dog sat on the rug
+16. the cat sat on the rug
+17. the cat ran to the park
+18. the dog sat on the mat
+19. the dog ran to the park
+20. the cat sat on the rug
+
+GREEDY EXAMPLES
+------------------------------------------------------------
+First-order greedy:  the cat sat on the cat sat on the cat sat on
+Second-order greedy: the cat sat on the mat

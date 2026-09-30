@@ -1,0 +1,52 @@
+
+FIRST-ORDER CONDITIONAL PROBABILITIES
+================================================
+P(next | the) = {'cat': 0.25, 'mat': 0.16666666666666666, 'rug': 0.16666666666666666, 'dog': 0.25, 'park': 0.16666666666666666}
+P(next | cat) = {'sat': 0.6666666666666666, 'ran': 0.3333333333333333}
+P(next | dog) = {'sat': 0.6666666666666666, 'ran': 0.3333333333333333}
+P(next | sat) = {'on': 1.0}
+P(next | ran) = {'to': 1.0}
+P(next | on) = {'the': 1.0}
+P(next | to) = {'the': 1.0}
+P(next | mat) = {'<END>': 1.0}
+P(next | rug) = {'<END>': 1.0}
+P(next | park) = {'<END>': 1.0}
+
+SECOND-ORDER CONDITIONAL PROBABILITIES
+================================================
+P(next | ('<START>', 'the')) = {'cat': 0.5, 'dog': 0.5}
+P(next | ('cat', 'ran')) = {'to': 1.0}
+P(next | ('cat', 'sat')) = {'on': 1.0}
+P(next | ('dog', 'ran')) = {'to': 1.0}
+P(next | ('dog', 'sat')) = {'on': 1.0}
+P(next | ('on', 'the')) = {'mat': 0.5, 'rug': 0.5}
+P(next | ('ran', 'to')) = {'the': 1.0}
+P(next | ('sat', 'on')) = {'the': 1.0}
+P(next | ('the', 'cat')) = {'sat': 0.6666666666666666, 'ran': 0.3333333333333333}
+P(next | ('the', 'dog')) = {'sat': 0.6666666666666666, 'ran': 0.3333333333333333}
+P(next | ('the', 'mat')) = {'<END>': 1.0}
+P(next | ('the', 'park')) = {'<END>': 1.0}
+P(next | ('the', 'rug')) = {'<END>': 1.0}
+P(next | ('to', 'the')) = {'park': 1.0}
+
+NORMALISATION CHECKS
+================================================
+First-order errors: {}
+Second-order errors: {}
+
+MODEL SIZE
+================================================
+First-order nonzero transition probabilities: 17
+Second-order nonzero transition probabilities: 18
+
+NEXT-WORD PREDICTIONS
+================================================
+argmax P(next | the) = cat
+argmax P(next | cat) = sat
+argmax P(next | dog) = sat
+argmax P(next | sat) = on
+argmax P(next | ran) = to
+
+GENERATED SENTENCES
+================================================
+Saved examples to /mnt/data/BN_Lab_Solved/generated_examples.txt
