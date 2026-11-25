@@ -1,0 +1,45 @@
+{
+  "description": "Actual fc1.weight.grad captured immediately after the first loss.backward(), before optimizer.step(), for the four-example mean BCEWithLogitsLoss batch.",
+  "gradients": {
+    "sigmoid": [
+      [
+        0.0004618687089532614,
+        0.0005475289653986692
+      ],
+      [
+        0.0037166913971304893,
+        0.003925715573132038
+      ]
+    ],
+    "tanh": [
+      [
+        -0.0005752556025981903,
+        0.00048021599650382996
+      ],
+      [
+        0.0021010935306549072,
+        0.004561066627502441
+      ]
+    ],
+    "ReLU": [
+      [
+        0.0006723850965499878,
+        -0.00013155769556760788
+      ],
+      [
+        0.004729628562927246,
+        -0.0009253919124603271
+      ]
+    ]
+  },
+  "norms": {
+    "sigmoid": 0.005453269463032484,
+    "tanh": 0.005077346693724394,
+    "ReLU": 0.004867766052484512
+  },
+  "shape": [
+    2,
+    2
+  ],
+  "check": "Each matrix Frobenius norm matches the early_first_layer_grad_norm saved in activation_results.json to floating-point tolerance."
+}
