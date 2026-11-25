@@ -224,11 +224,24 @@ For first-order, the possible current-token contexts are START plus the 10 lexic
 
 ### Expected qualitative behaviour
 
-- First-order model: more ambiguity and less coherent context because it sees only one previous word.
+- First-order model: more ambiguity because it sees only one previous token.
 - Second-order model: better local coherence because two previous tokens distinguish contexts such as `the cat` and `the dog`.
-- Greedy first-order can loop because `the` does not reveal enough context.
+- First-order greedy can loop because the most probable successor of `the` does not lead toward `<END>`.
 - Second-order greedy can produce a complete sentence such as `the cat sat on the mat`.
 - Sampling produces more variation than greedy generation.
+
+## Generation diversity and greedy-generation evidence
+
+The saved `generated_examples.txt` contains 20 sampled generations for each model and five greedy runs for each model.
+
+| Generation mode | Number generated | Distinct outputs | Observation |
+|---|---:|---:|---|
+| First-order sampling | 20 | 10 | More varied; the one-token context can combine transitions from unrelated sentence positions. |
+| Second-order sampling | 20 | 6 | More locally coherent; two-token contexts keep the observed sentence patterns together. |
+| First-order greedy | 5 | 1 | All five are the same 12-token prefix because strict argmax decoding enters a cycle. |
+| Second-order greedy | 5 | 1 | All five produce `the cat sat on the mat` and terminate at `<END>`. |
+
+Greedy decoding is deterministic with the fixed tie-breaking order, so repeated outputs are expected rather than five different samples. There is an important special case in this corpus: the first-order argmax sequence cycles through `the -> cat -> sat -> on -> the`, because `P(next | the)` has its largest mass on `cat`/`dog`, while the model never observes `the -> <END>`. The five required greedy runs are therefore recorded as capped 12-token outputs, not misrepresented as five complete sentences. Forcing `<END>` or switching to a lower-probability transition would no longer be strict greedy decoding. The second-order model distinguishes the contexts and reaches `<END>` naturally.
 
 ## Reflection draft
 
