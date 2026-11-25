@@ -48,6 +48,7 @@ class BinaryResult:
     probabilities: list[float]
     predictions: list[int]
     early_first_layer_grad_norm: float
+    early_first_layer_gradient: list[list[float]]
     steps: int
     learning_rate: float
     seed: int
@@ -113,6 +114,7 @@ def train_binary(
         initial_loss = float(loss_fn(model(X_XOR), Y_XOR).item())
 
     early_grad_norm: float | None = None
+    early_first_layer_gradient: list[list[float]] | None = None
     for step in range(steps):
         optimizer.zero_grad(set_to_none=True)
         logits = model(X_XOR)
@@ -120,6 +122,7 @@ def train_binary(
         loss.backward()
         if step == 0:
             early_grad_norm = float(model.fc1.weight.grad.norm().item())
+            early_first_layer_gradient = model.fc1.weight.grad.detach().cpu().tolist()
         optimizer.step()
 
     with torch.no_grad():
@@ -128,6 +131,7 @@ def train_binary(
         probabilities, predictions = classify_binary(final_logits)
 
     assert early_grad_norm is not None
+    assert early_first_layer_gradient is not None
     result = BinaryResult(
         model_type="2-2-1",
         activation=activation_name,
@@ -136,6 +140,7 @@ def train_binary(
         probabilities=[float(v) for v in probabilities.flatten()],
         predictions=[int(v) for v in predictions.flatten()],
         early_first_layer_grad_norm=early_grad_norm,
+        early_first_layer_gradient=early_first_layer_gradient,
         steps=steps,
         learning_rate=lr,
         seed=seed,
