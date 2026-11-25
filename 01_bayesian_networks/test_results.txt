@@ -1,0 +1,12 @@
+test_first_order_probabilities (test_language_models.LanguageModelTests.test_first_order_probabilities) ... ok
+test_five_greedy_runs_are_deterministic_for_each_model (test_language_models.LanguageModelTests.test_five_greedy_runs_are_deterministic_for_each_model) ... ok
+test_greedy_generation (test_language_models.LanguageModelTests.test_greedy_generation) ... ok
+test_parameter_count_includes_initial_distribution (test_language_models.LanguageModelTests.test_parameter_count_includes_initial_distribution) ... ok
+test_second_order_context_sparsity_has_explicit_universe (test_language_models.LanguageModelTests.test_second_order_context_sparsity_has_explicit_universe) ... ok
+test_second_order_probabilities (test_language_models.LanguageModelTests.test_second_order_probabilities) ... ok
+test_unseen_context_is_explicit (test_language_models.LanguageModelTests.test_unseen_context_is_explicit) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+OK
