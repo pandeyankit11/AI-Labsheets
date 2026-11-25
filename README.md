@@ -1,38 +1,33 @@
 # AI Labsheets
 
-Laboratory assignments, implementations, independent tests, generated evidence, and submission supplements for the Artificial Intelligence course.
+Laboratory assignments, implementations, independent tests, generated evidence, and submission reports for the Artificial Intelligence course.
 
 ## 01. Bayesian Networks and Autoregressive Language Models
 
 Directory: `01_bayesian_networks/`
 
-- First-order and second-order language models with sampling and greedy generation.
-- Probability normalization tests.
-- Corrected second-order parameter count, including the initial-token distribution.
-- Explicit second-order context universe and zero-context count.
-- Evidence: `answers.md`, `lab_output.txt`, `generated_examples.txt`, and `reflection.md`.
+- First-order and second-order autoregressive language models.
+- Conditional probability tables, normalization checks, parameter accounting, context sparsity, and generation diversity.
+- Evidence: `answers.md`, `lab_output.txt`, `generated_examples.txt`, `test_results.txt`, and `reflection.md`.
 
 ## 02. Logical Planning
 
 Directory: `02_logic_hands_on/`
 
-- Original warehouse STRIPS planner retained.
-- Revised locked-door/key domain with six actions.
-- BFS shortest plan: `PickKey -> Move(A,B) -> Unlock -> Move(B,C)`.
-- Impossible case without `PickKey`.
-- `validate_plan()` reports the first unsatisfied precondition in a proposed plan.
-- Supplement: `locked_door_results.md`.
+- Original warehouse STRIPS planner and optional Prolog verifier.
+- Revised locked-door domain with six actions, shortest-plan BFS, impossible case, first-error plan validation, and LLM-plan repair comparison.
+- Evidence: `locked_door_results.md`, `planner_output.txt`, and `test_results.txt`.
 
 ## 03. Search and A*
 
 Directory: `03_search_hands_on/`
 
-- BFS and A* on the original warehouse map and three test maps.
-- Consistent expansion-event counting and exact `S`/`G` map-marker validation.
-- Experiments for `h=0`, Euclidean distance, and `2 x Manhattan`.
-- Supplement: `heuristic_experiments.md`.
+- BFS and A* on the original warehouse map and three additional maps.
+- Exact start/goal marker validation and consistent expansion-event counting.
+- Five heuristic variants on the original and branching maps.
+- Evidence: `heuristic_experiments.md`, `search_output.txt`, and `test_results.txt`.
 
-## Run all checks
+## Run the checks
 
 ```bash
 cd 01_bayesian_networks
@@ -48,6 +43,6 @@ python3 test_search.py
 python3 search_agent.py
 ```
 
-The checked outputs are summarized in `verification_results.txt`. Local verification recorded 7 Bayesian unit tests, 8 planning checks, and 7 search checks passing.
+`verification_results.txt` records the test counts and measured outcomes. `TASK_AUDIT.md` maps available question sheets and submission reports to implementations and deliverables.
 
-The original DOCX submission files are retained unchanged. The revised planning and heuristic-experiment evidence has been added as adjacent Markdown supplements; those DOCX reports still need to be updated before treating the full formatted submission package as final.
+The original DOCX submission reports are preserved. The Search question-sheet PDF is not present in this branch, so source-level Search task verification remains conditional on that file being added.
