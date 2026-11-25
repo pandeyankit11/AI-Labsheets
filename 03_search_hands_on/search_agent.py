@@ -143,11 +143,17 @@ def path_length(path):
 
 
 def heuristic_experiments(grid, rows, cols, start, goal):
-    """Run the requested h=0, Euclidean, and 2x-Manhattan experiments."""
+    """Run five requested heuristic variants on the supplied fixed map.
+
+    Inflated Manhattan weights are weighted/inadmissible in general; measure
+    the resulting path rather than assuming that it remains optimal.
+    """
     configurations = [
         ("Zero heuristic (h=0)", zero_heuristic, 1.0),
         ("Euclidean distance", euclidean, 1.0),
-        ("Weighted Manhattan (2 x Manhattan)", manhattan, 2.0),
+        ("Manhattan distance", manhattan, 1.0),
+        ("Manhattan x 2", manhattan, 2.0),
+        ("Manhattan x 5", manhattan, 5.0),
     ]
     results = []
     for label, heuristic, weight in configurations:
@@ -156,6 +162,7 @@ def heuristic_experiments(grid, rows, cols, start, goal):
         )
         results.append({
             "heuristic": label,
+            "weight": weight,
             "path_length": path_length(path),
             "expanded_states": expanded,
             "path_cost": cost,
@@ -177,9 +184,9 @@ def report(label, path, expanded, cost=None):
 
 
 def main():
-    map_path = Path(__file__).resolve().parent / "warehouse_map.txt"
-    map_text = map_path.read_text(encoding="utf-8")
-    grid, rows, cols, start, goal = parse_map(map_text)
+    base = Path(__file__).resolve().parent
+    original_text = (base / "warehouse_map.txt").read_text(encoding="utf-8")
+    grid, rows, cols, start, goal = parse_map(original_text)
     print(f"Parsed grid: {rows} rows x {cols} cols, start={start}, goal={goal}\n")
 
     astar_path, astar_expanded, astar_cost = astar(
@@ -189,15 +196,25 @@ def main():
     report("A* (Manhattan) on original warehouse map", astar_path, astar_expanded, astar_cost)
     report("BFS on original warehouse map", bfs_path, bfs_expanded)
 
-    print("HEURISTIC EXPERIMENTS ON ORIGINAL WAREHOUSE MAP")
-    print("=" * 78)
-    for result in heuristic_experiments(grid, rows, cols, start, goal):
-        print(
-            f"{result['heuristic']}: path_length={result['path_length']}, "
-            f"expanded_states={result['expanded_states']}, path_cost={result['path_cost']}"
-        )
+    for map_filename, label in (
+        ("warehouse_map.txt", "Original warehouse map"),
+        ("map_altpaths.txt", "Branching alternative-path map"),
+    ):
+        map_text = (base / map_filename).read_text(encoding="utf-8")
+        exp_grid, exp_rows, exp_cols, exp_start, exp_goal = parse_map(map_text)
+        print(f"HEURISTIC EXPERIMENTS: {label}")
+        print("=" * 78)
+        for result in heuristic_experiments(
+            exp_grid, exp_rows, exp_cols, exp_start, exp_goal
+        ):
+            print(
+                f"{result['heuristic']}: path_length={result['path_length']}, "
+                f"expanded_states={result['expanded_states']}, path_cost={result['path_cost']}"
+            )
+        print()
+
     print(
-        "\nExpansion convention: non-stale frontier removals evaluated; goal included; "
+        "Expansion convention: non-stale frontier removals evaluated; goal included; "
         "reopened A* states count again when expanded at a lower g-score."
     )
 
