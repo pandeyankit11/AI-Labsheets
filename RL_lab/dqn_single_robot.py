@@ -1,140 +1,23 @@
+"""Task 6: single-robot DQN."""
+import csv,json
+from pathlib import Path
+import matplotlib.pyplot as plt
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import random
-from collections import deque
-
-# Reuse environment logic from Part 1
-class WarehouseEnv:
-    def __init__(self):
-        self.grid_size = 5
-        self.obstacles = {(0, 2), (1, 2), (3, 2), (4, 2)}
-        self.start = (2, 0)
-        self.goal = (2, 4)
-        self.max_steps = 40
-        self.reset()
-
-    def reset(self):
-        self.pos = self.start
-        self.steps = 0
-        return self.pos
-
-    def step(self, action):
-        r, c = self.pos
-        new_r, new_c = r, c
-        if action == 0: new_r -= 1
-        elif action == 1: new_r += 1
-        elif action == 2: new_c -= 1
-        elif action == 3: new_c += 1
-        
-        reward = -0.1
-        terminated = False
-        
-        if (new_r < 0 or new_r >= self.grid_size or 
-            new_c < 0 or new_c >= self.grid_size or 
-            (new_r, new_c) in self.obstacles):
-            self.pos = (r, c)
-            reward = -1.0
-        else:
-            self.pos = (new_r, new_c)
-            
-        if self.pos == self.goal:
-            reward = 10.0
-            terminated = True
-            
-        self.steps += 1
-        truncated = self.steps >= self.max_steps
-        
-        return self.pos, reward, terminated, truncated
-
-def pos_to_one_hot(pos):
-    idx = pos[0] * 5 + pos[1]
-    vec = np.zeros(25, dtype=np.float32)
-    vec[idx] = 1.0
-    return vec
-
-class DQN(nn.Module):
-    def __init__(self):
-        super(DQN, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(25, 64),
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, 5)
-        )
-        
-    def forward(self, x):
-        return self.net(x)
-
-def train_dqn():
-    env = WarehouseEnv()
-    
-    online_net = DQN()
-    target_net = DQN()
-    target_net.load_state_dict(online_net.state_dict())
-    
-    optimizer = optim.Adam(online_net.parameters(), lr=0.001)
-    replay_buffer = deque(maxlen=20000)
-    batch_size = 64
-    gamma = 0.95
-    
-    random.seed(7)
-    np.random.seed(7)
-    torch.manual_seed(7)
-    
-    total_steps = 12000
-    collect_steps = 500
-    
-    state = env.reset()
-    
-    for step in range(1, total_steps + 1):
-        # Epsilon decay over first 80% of training (12000 * 0.8 = 9600)
-        epsilon = max(0.05, 1.0 - (1.0 - 0.05) * (step / 9600))
-        
-        if step <= collect_steps or random.random() < epsilon:
-            action = random.randint(0, 4)
-        else:
-            with torch.no_grad():
-                q_vals = online_net(torch.tensor(pos_to_one_hot(state)))
-                action = q_vals.argmax().item()
-                
-        next_state, reward, terminated, truncated = env.step(action)
-        
-        replay_buffer.append((state, action, reward, next_state, terminated))
-        
-        if terminated or truncated:
-            state = env.reset()
-        else:
-            state = next_state
-            
-        # Training
-        if step > collect_steps and step % 4 == 0:
-            batch = random.sample(replay_buffer, batch_size)
-            states, actions, rewards, next_states, terms = zip(*batch)
-            
-            states_t = torch.tensor(np.array([pos_to_one_hot(s) for s in states]))
-            actions_t = torch.tensor(actions, dtype=torch.int64).unsqueeze(1)
-            rewards_t = torch.tensor(rewards, dtype=torch.float32)
-            next_states_t = torch.tensor(np.array([pos_to_one_hot(s) for s in next_states]))
-            terms_t = torch.tensor(terms, dtype=torch.float32)
-            
-            q_values = online_net(states_t).gather(1, actions_t).squeeze()
-            
-            with torch.no_grad():
-                next_q_values = target_net(next_states_t).max(1)[0]
-                targets = rewards_t + gamma * (1 - terms_t) * next_q_values
-                
-            loss = nn.MSELoss()(q_values, targets)
-            
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            
-            if (step // 4) % 250 == 0:
-                target_net.load_state_dict(online_net.state_dict())
-
-if __name__ == '__main__':
-    train_dqn()
-    print("DQN Training Complete.")
+from rl_core import train_single_dqn
+ROOT=Path(__file__).resolve().parent
+RESULTS=ROOT/"results";RESULTS.mkdir(exist_ok=True)
+def main():
+    network,raw=train_single_dqn(seed=7,total_steps=12000)
+    suc,tmo,inv,ret=raw["episode_successes"],raw["episode_timeouts"],raw["episode_invalid_moves"],raw["episode_returns"]
+    n=len(ret);w=50;ms=np.convolve(np.asarray(suc,float),np.ones(w)/w,mode="valid");mr=np.convolve(np.asarray(ret,float),np.ones(w)/w,mode="valid")
+    fig,ax=plt.subplots();ax.plot(np.arange(w,n+1),ms);ax.set(xlabel="Completed episode",ylabel="50-episode success moving average",ylim=(0,1.05));fig.tight_layout();fig.savefig(RESULTS/"single_dqn_success.png",dpi=160);plt.close(fig)
+    fig,ax=plt.subplots();ax.plot(np.arange(w,n+1),mr);ax.set(xlabel="Completed episode",ylabel="50-episode mean return");fig.tight_layout();fig.savefig(RESULTS/"single_dqn_return.png",dpi=160);plt.close(fig)
+    with (RESULTS/"single_dqn_episode_metrics.csv").open("w",newline="",encoding="utf-8") as f:
+        cw=csv.writer(f);cw.writerow(["episode","return","success","timeout","invalid_moves"]);cw.writerows(zip(range(1,n+1),ret,suc,tmo,inv))
+    summary={"config":raw["config"],"completed_episodes":n,"training_success_rate":float(np.mean(suc)),
+      "training_timeout_rate":float(np.mean(tmo)),"training_mean_invalid_moves":float(np.mean(inv)),
+      "final_50_episode_success_rate":float(np.mean(suc[-50:])),"optimizer_updates":raw["optimizer_updates"],
+      "target_network_syncs":raw["target_sync_updates_requested"],"last_loss":raw["loss_last"],"evaluation":raw["evaluation"]}
+    (RESULTS/"single_robot_dqn_results.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
+    print(json.dumps(summary,indent=2))
+if __name__=="__main__":main()
