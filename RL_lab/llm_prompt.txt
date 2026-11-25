@@ -1,0 +1,15 @@
+CS-F407 RL LAB - RETAINED IMPLEMENTATION SPECIFICATION
+
+This file records the explicit implementation specification for reproducibility. It is not a verbatim transcript of an unavailable external LLM chat.
+
+TABULAR Q-LEARNING
+Implement an inspectable NumPy Q-learning agent for a 5x5 grid. Obstacles={(0,2),(1,2),(3,2),(4,2)}; centre doorway (2,2) is free. Start=(2,0), goal=(2,4). Actions: Up, Down, Left, Right, Wait. Boundary/obstacle attempts stay and yield -1. Goal yields +10 and true termination. Other valid actions, including Wait, yield -0.1. Gamma=.95. Truncate unfinished episodes after 40 steps, not terminate. Use zero 25x5 table, alpha=.2, seed=7, 1500 episodes, epsilon 1 to .05 over first 1200 episodes. Random training ties, fixed greedy-evaluation tie break. Record returns, success, timeout, invalid moves. Compare 100 random episodes and test start (0,0) without retraining.
+
+SINGLE-ROBOT DQN
+Preserve the environment. Encode (r,c) as length-25 one-hot at index 5*r+c. Network 25 -> 64 ReLU -> 64 ReLU -> 5 linear Q outputs, no softmax. Seed 7 before network construction, replay capacity 20000, batch 64, collect 500 steps, Adam lr=.001, gamma=.95, optimizer update every 4 environment steps, target sync every 250 optimizer updates. Train 12000 steps. Epsilon 1 to .05 over first 80%. Use detached targets. Bootstrap on normal transitions and truncation, not true goal termination; preserve next state before reset. Use MSE TD loss on recorded action. Test non-terminal (-1+.95*2=.9), terminal (+5), truncated (.9). Evaluate default and additional (0,0) with learning disabled.
+
+TWO-ROBOT DQN
+A starts (2,0), goal (2,4); B starts (2,4), goal (2,0). Ordered state (pA,pB), two length-25 one-hot vectors, 50 inputs. Five actions each -> 25 joint actions; encode j=5*aA+aB, decode divmod(j,5). Network 50 -> 64 ReLU -> 64 ReLU -> 25 linear outputs. Compute both moves from same old state. A robot at its own goal stays. Same-cell or swap collision terminates -10 and retains old positions. Entering a waiting robot cell is collision; following into a vacated cell is allowed if final cells differ and there is no swap. Otherwise reward=-.1-b+5*k+5*I, where b counts invalid moves by non-goal robots, k newly reached goals, I=1 when both are now at goals. Collision overrides other terms. Terminate on collision or both goals; truncate after 40 joint steps. Use Task 6 DQN settings and 60000 steps, seed 7. Do not insert path planner/action filter. Preserve failed runs. Evaluate default and A=(0,0),B=(4,4) with original goals.
+
+VALIDATION
+Test boundary/obstacle, doorway, wait reward, goal termination, truncation, Q update arithmetic, terminal/truncation target masks, output dimensions, same-cell/swap/follow/wait collisions, collision reward priority, goal occupancy, no repeat arrival bonus. Save trajectories and metrics. Never describe a hand-designed path as a learned result.
