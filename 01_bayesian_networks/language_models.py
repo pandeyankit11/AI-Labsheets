@@ -120,10 +120,17 @@ class SecondOrderLM:
         default_factory=lambda: defaultdict(Counter)
     )
     first_token_counts: Counter[str] = field(default_factory=Counter)
+    lexical_vocabulary: frozenset[str] = field(default_factory=frozenset)
 
     def fit(self, tokenised_sentences: Sequence[Sequence[str]]) -> None:
         self.trigram_counts.clear()
         self.first_token_counts.clear()
+        self.lexical_vocabulary = frozenset(
+            token
+            for sentence in tokenised_sentences
+            for token in sentence
+            if token not in {START, END}
+        )
 
         for tokens in tokenised_sentences:
             if len(tokens) < 2:
@@ -196,9 +203,33 @@ class SecondOrderLM:
                 errors[context] = total
         return errors
 
+    def context_statistics(self) -> Dict[str, int]:
+        """Count valid contexts, with END terminal and START only in slot one.
+
+        Valid contexts are (START, lexical_token) and
+        (lexical_token, lexical_token). For V lexical tokens, the universe
+        has (1 + |V|) * |V| possible contexts.
+        """
+        if not self.lexical_vocabulary:
+            raise ValueError("Fit the model before requesting context statistics.")
+        lexical_size = len(self.lexical_vocabulary)
+        possible = (lexical_size + 1) * lexical_size
+        observed = len(self.trigram_counts)
+        zero = possible - observed
+        if zero < 0:
+            raise AssertionError("Observed contexts exceed the defined context universe.")
+        return {
+            "lexical_vocabulary_size": lexical_size,
+            "possible_contexts": possible,
+            "observed_contexts": observed,
+            "zero_probability_contexts": zero,
+        }
+
     @property
     def nonzero_parameters(self) -> int:
-        return sum(len(counter) for counter in self.trigram_counts.values())
+        """Count trigram successor probabilities and P(X1 | START)."""
+        trigram_parameters = sum(len(counter) for counter in self.trigram_counts.values())
+        return trigram_parameters + len(self.first_token_counts)
 
 
 def train_models(raw_sentences: Iterable[str]) -> Tuple[FirstOrderLM, SecondOrderLM]:
