@@ -18,7 +18,7 @@ def main():
     fig.tight_layout();fig.savefig(RESULTS/"q_learning_return.png",dpi=160);fig.savefig(RESULTS/"q_learning_return.svg");plt.close(fig)
     fig,ax=plt.subplots(); ax.plot(np.arange(window,len(successes)+1),ms)
     ax.set(xlabel="Episode",ylabel=f"Success rate ({window}-episode moving average)",ylim=(0,1.05),title="Tabular Q-learning training success")
-    fig.tight_layout();fig.savefig(RESULTS/"q_learning_success.png",dpi=160);plt.close(fig)
+    fig.tight_layout();fig.savefig(RESULTS/"q_learning_success.png",dpi=160);fig.savefig(RESULTS/"q_learning_success.svg");plt.close(fig)
     with (RESULTS/"q_learning_episode_metrics.csv").open("w",newline="",encoding="utf-8") as f:
         w=csv.writer(f);w.writerow(["episode","return","success","timeout","invalid_moves","epsilon"])
         w.writerows(zip(range(1,len(returns)+1),training["returns"],training["successes"],training["timeouts"],training["invalid_moves"],training["epsilons"]))
