@@ -10,3 +10,19 @@ The key lesson is that code generation and model specification are different tas
 
 
 The audit exposed an accounting issue: the second-order model stores its initial-token distribution separately from trigram counts. Counting only trigram successors understated the total number of non-zero learned probability entries. The corrected count is 18 trigram successor entries plus one initial-token probability, for 19 total. I also defined the valid second-order context universe before reporting sparsity: 110 possible contexts, 14 observed, and 96 unobserved for this corpus.
+
+
+## Example of code inspected and corrected
+
+The audit found that the second-order model stored the initial-token distribution separately from the trigram successor counts. The previous parameter-count property counted only trigram successors, omitting `P(X1 | START)`. The corrected implementation is:
+
+```python
+@property
+def nonzero_parameters(self) -> int:
+    trigram_parameters = sum(
+        len(counter) for counter in self.trigram_counts.values()
+    )
+    return trigram_parameters + len(self.first_token_counts)
+```
+
+For this corpus, the complete second-order count is 19: 18 non-zero trigram-successor entries plus one non-zero initial-token entry. A regression test checks the complete count. The valid two-token context universe is also defined explicitly before reporting sparsity: 110 possible, 14 observed, and 96 unobserved contexts.
