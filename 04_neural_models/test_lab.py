@@ -22,6 +22,17 @@ class NeuralModelsLabTests(unittest.TestCase):
             self.assertEqual(result.predictions, [0, 1, 1, 0], msg=result.activation)
             self.assertLess(result.final_loss, 0.01, msg=result.activation)
 
+    def test_first_layer_gradient_tensor_is_recorded(self):
+        for result in activation_experiments():
+            gradient = torch.tensor(result.early_first_layer_gradient)
+            self.assertEqual(tuple(gradient.shape), (2, 2))
+            self.assertGreater(float(gradient.abs().sum().item()), 0.0)
+            self.assertAlmostEqual(
+                float(gradient.norm().item()),
+                result.early_first_layer_grad_norm,
+                places=6,
+            )
+
     def test_zero_initialisation_preserves_hidden_symmetry(self):
         result = train_symmetry_experiment()
         self.assertTrue(all(row["row_difference"] == 0.0 for row in result["rows"]))
