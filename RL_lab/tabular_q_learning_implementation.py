@@ -15,7 +15,7 @@ def main():
     ms=np.convolve(successes,np.ones(window)/window,mode="valid")
     fig,ax=plt.subplots(); ax.plot(np.arange(window,len(returns)+1),mr)
     ax.set(xlabel="Episode",ylabel=f"Mean return ({window}-episode moving average)",title="Tabular Q-learning training return")
-    fig.tight_layout();fig.savefig(RESULTS/"q_learning_return.png",dpi=160);plt.close(fig)
+    fig.tight_layout();fig.savefig(RESULTS/"q_learning_return.png",dpi=160);fig.savefig(RESULTS/"q_learning_return.svg");plt.close(fig)
     fig,ax=plt.subplots(); ax.plot(np.arange(window,len(successes)+1),ms)
     ax.set(xlabel="Episode",ylabel=f"Success rate ({window}-episode moving average)",ylim=(0,1.05),title="Tabular Q-learning training success")
     fig.tight_layout();fig.savefig(RESULTS/"q_learning_success.png",dpi=160);plt.close(fig)
