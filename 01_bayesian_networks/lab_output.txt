@@ -37,7 +37,8 @@ Second-order errors: {}
 MODEL SIZE
 ================================================
 First-order nonzero transition probabilities: 17
-Second-order nonzero transition probabilities: 18
+Second-order trigram-successor probabilities (excluding initial-token distribution): 18
+Second-order total nonzero conditional-probability entries (including P(the | START)): 19
 
 NEXT-WORD PREDICTIONS
 ================================================
@@ -50,3 +51,11 @@ argmax P(next | ran) = to
 GENERATED SENTENCES
 ================================================
 Saved examples to /mnt/data/BN_Lab_Solved/generated_examples.txt
+
+SECOND-ORDER CONTEXT SPARSITY
+================================================
+Lexical vocabulary size: 10
+Context universe: (START or lexical token, followed by lexical token)
+Possible contexts: 110
+Observed contexts: 14
+Unobserved / zero-probability contexts: 96
