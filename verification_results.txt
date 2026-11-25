@@ -1,0 +1,57 @@
+AI LABSHEETS VERIFICATION SUMMARY
+================================
+
+Local execution environment: Python 3.13.5
+Test commands:
+  01_bayesian_networks: python3 -m unittest -v test_language_models.py
+  01_bayesian_networks: python3 run_lab.py
+  02_logic_hands_on: python3 test_planner.py
+  02_logic_hands_on: python3 planner.py
+  03_search_hands_on: python3 test_search.py
+  03_search_hands_on: python3 search_agent.py
+
+RESULTS
+-------
+Bayesian language-model tests: 7 passed, 0 failed.
+Logical-planning checks: 8 passed, 0 failed.
+Search checks: 7 passed, 0 failed.
+All three Python directories passed compileall.
+
+KEY REPRODUCED OUTPUTS
+----------------------
+Warehouse STRIPS plan:
+  PickUp(package,a) -> Move(a,b) -> Move(b,c) -> Drop(package,c)
+  4 actions.
+
+Locked-door shortest plan:
+  PickKey -> Move(A,B) -> Unlock -> Move(B,C)
+  4 actions.
+Without PickKey: no plan.
+Invalid proposed plan Move(A,B) -> Unlock -> Move(B,C):
+  first failure is step 2 (Unlock), missing precondition has(key).
+
+Bayesian model accounting:
+  First-order non-zero conditional probabilities: 17.
+  Second-order trigram successors: 18.
+  Second-order initial-token distribution: 1.
+  Second-order total non-zero probabilities: 19.
+  Second-order possible contexts: 110.
+  Second-order observed contexts: 14.
+  Second-order unobserved contexts: 96.
+
+Original warehouse search map:
+  BFS: 40 moves, 64 evaluated states.
+  A* Manhattan: 40 moves, 64 evaluated states.
+  A* h=0: 40 moves, 64 evaluated states.
+  A* Euclidean: 40 moves, 64 evaluated states.
+  A* 2x Manhattan: 40 moves, 67 evaluated states.
+
+Other search maps:
+  Trivial map: 1 move.
+  No-solution map: no path, 9 evaluated states.
+  Alternative-path map: shortest path of 7 moves (A* 14 evaluated; BFS 18).
+
+Expansion convention:
+  Non-stale frontier removals evaluated; goal included; A* re-expansions count if a lower g-score is found.
+
+The DOCX submission reports were not modified. The revised locked-door and heuristic experiment evidence is provided in adjacent Markdown supplements because the GitHub text-file update action does not safely replace binary DOCX files.
