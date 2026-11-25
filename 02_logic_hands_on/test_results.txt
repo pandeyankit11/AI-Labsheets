@@ -1,0 +1,14 @@
+Test A PASSED: warehouse plan = ['PickUp(package,a)', 'Move(a,b)', 'Move(b,c)', 'Drop(package,c)']
+Test B PASSED: warehouse domain is unsolvable without PickUp
+Test C PASSED: PickUp at A and Move(A,B) are applicable; Drop at C is not
+Test D PASSED: package goal is checked independently
+Test E PASSED: shortest locked-door plan = ['PickKey', 'Move(A,B)', 'Unlock', 'Move(B,C)']
+Test F PASSED: no plan exists when PickKey is removed
+Test G PASSED: first invalid action is Unlock; missing precondition HasKey
+Test H PASSED: unknown proposed actions are rejected explicitly
+Test I PASSED: BFS node budget is enforced
+Test J PASSED: initially applicable actions are Move(A,B) and PickKey
+Test K PASSED: all reachable plan states have exactly one At(·) proposition
+Test L PASSED: revised LLM plan is valid, reaches the goal, and matches BFS length
+
+All independent planner tests passed.
