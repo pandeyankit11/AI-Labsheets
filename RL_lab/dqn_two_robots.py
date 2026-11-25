@@ -28,6 +28,6 @@ def main():
     ax.plot([p[1] for p in pa],[p[0] for p in pa],marker="o",label="Robot A actual greedy rollout")
     ax.plot([p[1] for p in pb],[p[0] for p in pb],marker="s",label="Robot B actual greedy rollout")
     ax.set(title="Seed-7 two-robot DQN greedy rollout",xlabel="Column",ylabel="Row");ax.legend();fig.tight_layout()
-    fig.savefig(RESULTS/"two_robot_greedy_trajectory.png",dpi=160);plt.close(fig)
+    fig.savefig(RESULTS/"two_robot_greedy_trajectory.png",dpi=160);fig.savefig(RESULTS/"two_robot_greedy_trajectory.svg");plt.close(fig)
     print(json.dumps(summary,indent=2))
 if __name__=="__main__":main()
