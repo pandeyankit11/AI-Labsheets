@@ -3,7 +3,7 @@
 Audit date: 25 November 2026  
 Branch: `complete-remaining-lab-tasks`
 
-This audit is based on the PDFs present in the current branch and the two existing DOCX submission reports. The original Word reports were inspected rather than assumed complete from their filenames.
+This audit is based on the three supplied PDF lab sheets and the Search Word question sheet, `03_search_hands_on/AI_Lab_Search_AStar_Submission.docx`. The Search DOCX is the source handout for Tasks 0–9, not a completed submission report. The original Logic DOCX submission report was inspected separately.
 
 ## 01 — Bayesian Networks (`lab_sheet.pdf`, 11 pages)
 
@@ -40,28 +40,30 @@ The existing `AI_Lab_Logical_Planning_Submission.docx` covers the original sheet
 
 **Assessment:** Required revised-domain tasks are implemented and documented. The LLM comparison is labeled as the candidate/revision generated in this ChatGPT session, not falsely attributed to another queried model.
 
-## 04 — Search & A*
+## 04 — Search & A* (`AI_Lab_Search_AStar_Submission.docx`, Tasks 0–9)
 
-**Source-file limitation:** The current recursive GitHub tree contains no Search lab question-sheet PDF in `03_search_hands_on/` (nor a file named as a Search lab sheet). The detailed `AI_Lab_Search_AStar_Submission.docx` exists and was inspected; it documents the original Search exercise Tasks 0–9, including formulation, design, prompt, BFS/A*, maps, test results, heuristic investigation, LLM evaluation, and reflection. However, that report is a submission report, not the original question sheet. Exact source-to-task verification against the Search question-sheet PDF remains unconfirmed until that PDF is present in the branch.
+The Search DOCX is the question sheet and is present in `03_search_hands_on/`. It was audited as the source for Tasks 0–9. It is not a missing PDF, and the absence of a separate Search PDF is not a blocker.
 
-| Requirement evidenced by the existing Search report/code | Evidence/status |
+| Question-sheet area | Evidence/status |
 |---|---|
-| Search formulation, state/action/transition/cost, design and LLM prompt | Existing DOCX report |
-| BFS/A* implementations, path reconstruction, maps and independent tests | `search_agent.py`, `test_search.py`, map files and existing DOCX |
-| Heuristic experiments | Five variants (`h=0`, Euclidean, Manhattan, `2×`, `5×`) on both original and branching maps; results in `heuristic_experiments.md` |
-| Expansion-count consistency | BFS/A* count evaluated frontier removals including the goal; branching-map BFS count is 18 under this convention, superseding old DOCX count 17 |
-| Exactly one start and goal | `parse_map()` enforces this and tests duplicate/missing markers |
-| Admissibility/optimality boundary | Branching map shows `5× Manhattan` returns a valid but non-shortest 9-move path where the optimum is 7 |
+| Problem formulation: state, initial state, actions, transition model, goal test, and path cost | Defined in `search_answers.md` and implemented in `search_agent.py` |
+| Search design and BFS/A* behavior | Explained in `search_answers.md`; implemented with path reconstruction in `search_agent.py` |
+| Map-based execution and path/cost/expansion comparison | Original warehouse and additional maps are retained; measured output is in `search_output.txt` |
+| Edge cases and independent validation | Trivial, unreachable, and alternative-route maps; nine independent checks in `test_search.py` and `test_results.txt` |
+| Heuristic investigation | Five variants on the original and branching maps; tables and interpretation in `heuristic_experiments.md` and `search_answers.md` |
+| LLM prompt, evaluation, and reflection | Prompt, review summary, comparison with measured behavior, and limitations in `search_answers.md`. The LLM review is explicitly disclosed as generated in this ChatGPT session, not an external-model transcript. |
+| Expansion-count consistency | BFS/A* count evaluated frontier removals including the goal; branching-map BFS count is 18 under this convention, superseding an older count of 17 that omitted the terminal goal. |
+| Admissibility/optimality boundary | Branching map shows `5× Manhattan` returns a valid but non-shortest 9-move path where the optimum is 7. |
 
-**Assessment:** Implementation and experiments are strengthened against the available Search report. Exact verification against the original Search question-sheet PDF cannot be certified because the PDF is absent from the branch.
+**Assessment:** The Search question sheet has been source-audited. Implementation, edge-case tests, heuristic experiments, written answers, and the LLM-prompt/evaluation section are present. The LLM section does not pretend that a separate third-party model was queried.
 
 ## Final status
 
 - Bayesian: substantially complete, with first-order greedy's non-terminating argmax loop explicitly disclosed.
-- Original Logic: complete according to the existing DOCX report and code.
+- Original Logic: complete according to the original DOCX report and code.
 - Revised Logic: required Tasks 6–7 complete in code, tests, and supplement.
-- Search: implementation and available report requirements audited; original question-sheet verification remains blocked by the absent source PDF.
+- Search: Tasks 0–9 audited against the DOCX question sheet; implementation, independent tests, heuristic experiments, written analysis, and LLM review disclosure are present.
 
 Latest rerun: 7 Bayesian tests, 12 planning checks, and 9 Search checks passed; `compileall` succeeded for all three directories. Raw test and demonstration outputs are saved beside the relevant lab code.
 
-No original DOCX report has been overwritten. New and corrected source, test, and Markdown evidence is committed on `complete-remaining-lab-tasks`; `main` is not changed.
+No original question sheet or Logic submission report has been overwritten. New and corrected source, test, written-answer, and Markdown evidence is committed on `complete-remaining-lab-tasks`; `main` is not changed.
