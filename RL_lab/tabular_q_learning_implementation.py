@@ -1,124 +1,35 @@
-import numpy as np
+"""Task 1-5: reproducible tabular Q-learning and evaluation."""
+import csv, json
+from pathlib import Path
 import matplotlib.pyplot as plt
-
-# --- Environment Definition ---
-class WarehouseEnv:
-    def __init__(self):
-        self.grid_size = 5
-        self.obstacles = {(0, 2), (1, 2), (3, 2), (4, 2)}
-        self.start = (2, 0)
-        self.goal = (2, 4)
-        self.max_steps = 40
-        self.reset()
-
-    def reset(self):
-        self.pos = self.start
-        self.steps = 0
-        return self.state_to_idx(self.pos)
-
-    def state_to_idx(self, pos):
-        return pos[0] * self.grid_size + pos[1]
-
-    def step(self, action):
-        r, c = self.pos
-        new_r, new_c = r, c
-        
-        if action == 0: new_r -= 1       # Up
-        elif action == 1: new_r += 1     # Down
-        elif action == 2: new_c -= 1     # Left
-        elif action == 3: new_c += 1     # Right
-        # action == 4 is Wait (stays same)
-
-        reward = -0.1
-        terminated = False
-        
-        # Check boundary and obstacles
-        if (new_r < 0 or new_r >= self.grid_size or 
-            new_c < 0 or new_c >= self.grid_size or 
-            (new_r, new_c) in self.obstacles):
-            self.pos = (r, c) # Stay in place
-            reward = -1.0
-        else:
-            self.pos = (new_r, new_c)
-            
-        if self.pos == self.goal:
-            reward = 10.0
-            terminated = True
-            
-        self.steps += 1
-        truncated = self.steps >= self.max_steps
-        
-        return self.state_to_idx(self.pos), reward, terminated, truncated
-
-# --- Agent and Training ---
-def train_q_learning():
-    env = WarehouseEnv()
-    n_states = 25
-    n_actions = 5
-    
-    Q = np.zeros((n_states, n_actions))
-    alpha = 0.2
-    gamma = 0.95
-    n_episodes = 1500
-    
-    np.random.seed(7)
-    
-    returns = []
-    successes = []
-    
-    for ep in range(n_episodes):
-        state = env.reset()
-        ep_return = 0
-        
-        # Linear epsilon decay from 1.0 to 0.05 over 1200 episodes
-        epsilon = max(0.05, 1.0 - (1.0 - 0.05) * (ep / 1200))
-        
-        while True:
-            # Epsilon-greedy action selection
-            if np.random.rand() < epsilon:
-                action = np.random.randint(n_actions)
-            else:
-                # Random tie-breaking
-                max_val = np.max(Q[state])
-                action = np.random.choice(np.flatnonzero(Q[state] == max_val))
-                
-            next_state, reward, terminated, truncated = env.step(action)
-            ep_return += reward
-            
-            # Q-learning target computation
-            if terminated:
-                target = reward
-            else:
-                target = reward + gamma * np.max(Q[next_state])
-                
-            Q[state, action] += alpha * (target - Q[state, action])
-            state = next_state
-            
-            if terminated or truncated:
-                returns.append(ep_return)
-                successes.append(1 if terminated else 0)
-                break
-                
-    return Q, returns, successes
-
-# --- Evaluation ---
-def evaluate_greedy(Q):
-    env = WarehouseEnv()
-    state = env.reset()
-    path = [env.pos]
-    
-    while True:
-        # Fixed tie-breaking for evaluation (e.g., first max action)
-        action = np.argmax(Q[state])
-        state, reward, terminated, truncated = env.step(action)
-        path.append(env.pos)
-        
-        if terminated or truncated:
-            break
-            
-    print("Greedy Trajectory:", path)
-    print("Length:", len(path)-1)
-    
-if __name__ == '__main__':
-    Q, returns, successes = train_q_learning()
-    evaluate_greedy(Q)
+import numpy as np
+from rl_core import train_q_learning, evaluate_q_policy, evaluate_random_policy
+ROOT=Path(__file__).resolve().parent
+RESULTS=ROOT/"results"; RESULTS.mkdir(exist_ok=True)
+def main():
+    Q,training=train_q_learning(seed=7,episodes=1500)
+    greedy=evaluate_q_policy(Q); additional=evaluate_q_policy(Q,start=(0,0))
+    random_baseline=evaluate_random_policy(episodes=100,seed=17); window=50
+    returns=np.asarray(training["returns"],float); successes=np.asarray(training["successes"],float)
+    mr=np.convolve(returns,np.ones(window)/window,mode="valid")
+    ms=np.convolve(successes,np.ones(window)/window,mode="valid")
+    fig,ax=plt.subplots(); ax.plot(np.arange(window,len(returns)+1),mr)
+    ax.set(xlabel="Episode",ylabel=f"Mean return ({window}-episode moving average)",title="Tabular Q-learning training return")
+    fig.tight_layout();fig.savefig(RESULTS/"q_learning_return.png",dpi=160);plt.close(fig)
+    fig,ax=plt.subplots(); ax.plot(np.arange(window,len(successes)+1),ms)
+    ax.set(xlabel="Episode",ylabel=f"Success rate ({window}-episode moving average)",ylim=(0,1.05),title="Tabular Q-learning training success")
+    fig.tight_layout();fig.savefig(RESULTS/"q_learning_success.png",dpi=160);plt.close(fig)
+    with (RESULTS/"q_learning_episode_metrics.csv").open("w",newline="",encoding="utf-8") as f:
+        w=csv.writer(f);w.writerow(["episode","return","success","timeout","invalid_moves","epsilon"])
+        w.writerows(zip(range(1,len(returns)+1),training["returns"],training["successes"],training["timeouts"],training["invalid_moves"],training["epsilons"]))
+    summary={"training":{"seed":7,"episodes":1500,"alpha":0.2,"gamma":0.95,"epsilon_start":training["epsilons"][0],
+       "epsilon_after_decay":training["epsilons"][1199],"moving_average_window":window,
+       "final_50_episode_success_rate":float(np.mean(training["successes"][-50:])),
+       "final_50_episode_mean_return":float(np.mean(training["returns"][-50:]))},
+       "greedy_default_start":greedy,"greedy_additional_start_0_0":additional,
+       "random_policy_100_episodes":random_baseline,"shortest_route_steps":4,
+       "shortest_route":[[2,0],[2,1],[2,2],[2,3],[2,4]]}
+    (RESULTS/"q_learning_results.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
+    np.savetxt(RESULTS/"q_table.csv",Q,delimiter=",")
+    print(json.dumps(summary,indent=2))
+if __name__=="__main__":main()
