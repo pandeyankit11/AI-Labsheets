@@ -1,84 +1,132 @@
-"""
-Independent tests for search_agent.py (Task 3).
+"""Independent tests for map parsing, BFS, A*, and heuristic experiments."""
 
-A program that produces a plausible path is not necessarily correct, so
-each test checks a specific, independently-known expected behaviour
-rather than just eyeballing the output.
-"""
+from pathlib import Path
 
-from search_agent import parse_map, bfs, astar, manhattan, path_length
+from search_agent import (
+    astar, bfs, euclidean, heuristic_experiments, manhattan, parse_map, path_length,
+)
+
+BASE = Path(__file__).resolve().parent
 
 
-def load(path):
-    with open(path) as f:
-        return parse_map(f.read())
+def load(filename):
+    return parse_map((BASE / filename).read_text(encoding="utf-8"))
 
 
 def verify_path_is_valid(grid, rows, cols, start, goal, path):
-    """Independently re-check a returned path: every step must be a legal
-    move (4-connected, in bounds, not an obstacle), it must start at
-    start and end at goal, and it must not revisit a cell (no wasted
-    steps in a shortest path)."""
+    assert path is not None, "expected a path"
     assert path[0] == start, "path does not start at S"
     assert path[-1] == goal, "path does not end at G"
     assert len(set(path)) == len(path), "path revisits a cell"
-    for i in range(len(path) - 1):
-        r0, c0 = path[i]
-        r1, c1 = path[i + 1]
-        assert abs(r0 - r1) + abs(c0 - c1) == 1, f"illegal move {path[i]} -> {path[i+1]}"
-        assert 0 <= r1 < rows and 0 <= c1 < cols, "step leaves the grid"
-        assert grid[r1][c1] != "#", "step lands on an obstacle"
+    for index in range(len(path) - 1):
+        r0, c0 = path[index]
+        r1, c1 = path[index + 1]
+        assert abs(r0 - r1) + abs(c0 - c1) == 1
+        assert 0 <= r1 < rows and 0 <= c1 < cols
+        assert grid[r1][c1] != "#"
 
 
 def test_1_original_warehouse():
     grid, rows, cols, start, goal = load("warehouse_map.txt")
-    path, expanded, cost = astar(grid, rows, cols, start, goal, heuristic=manhattan)
-    assert path is not None, "Test 1 FAILED: no path found on the original map"
-    verify_path_is_valid(grid, rows, cols, start, goal, path)
-    assert path_length(path) == 40, f"Test 1 FAILED: expected 40 moves, got {path_length(path)}"
-    print(f"Test 1 PASSED: path length {path_length(path)}, {expanded} states expanded")
+    astar_path, astar_expanded, cost = astar(grid, rows, cols, start, goal, heuristic=manhattan)
+    bfs_path, bfs_expanded = bfs(grid, rows, cols, start, goal)
+    verify_path_is_valid(grid, rows, cols, start, goal, astar_path)
+    verify_path_is_valid(grid, rows, cols, start, goal, bfs_path)
+    assert path_length(astar_path) == path_length(bfs_path) == 40
+    assert cost == 40
+    assert astar_expanded == bfs_expanded == 64
+    print(f"Test 1 PASSED: both find 40 moves and evaluate {astar_expanded} states")
 
 
 def test_2_trivial():
     grid, rows, cols, start, goal = load("map_trivial.txt")
     path, expanded, cost = astar(grid, rows, cols, start, goal, heuristic=manhattan)
-    assert path is not None
     verify_path_is_valid(grid, rows, cols, start, goal, path)
-    assert path_length(path) == 1, "Test 2 FAILED: expected the one-step solution"
-    print(f"Test 2 PASSED: one-step path {path}")
+    assert path_length(path) == cost == 1
+    assert expanded == 2
+    print(f"Test 2 PASSED: one-move solution; {expanded} states evaluated")
 
 
 def test_3_no_solution():
     grid, rows, cols, start, goal = load("map_nosolution.txt")
     path, expanded, cost = astar(grid, rows, cols, start, goal, heuristic=manhattan)
-    assert path is None, "Test 3 FAILED: planner invented a path to an unreachable goal"
-    assert expanded > 0, "Test 3 FAILED: search terminated without exploring anything"
-    # sanity: it must not have looped forever -- getting here at all proves termination
-    print(f"Test 3 PASSED: correctly reported no path ({expanded} states expanded, search terminated)")
+    assert path is None and cost is None
+    assert expanded > 0
+    print(f"Test 3 PASSED: no path; {expanded} states evaluated")
 
 
 def test_4_alternative_paths_are_shortest():
     grid, rows, cols, start, goal = load("map_altpaths.txt")
-    astar_path, astar_expanded, _ = astar(grid, rows, cols, start, goal, heuristic=manhattan)
+    astar_path, astar_expanded, astar_cost = astar(grid, rows, cols, start, goal, heuristic=manhattan)
     bfs_path, bfs_expanded = bfs(grid, rows, cols, start, goal)
-
     verify_path_is_valid(grid, rows, cols, start, goal, astar_path)
     verify_path_is_valid(grid, rows, cols, start, goal, bfs_path)
-
-    assert path_length(astar_path) == 7, "Test 4 FAILED: A* did not find the shortest (7-move) path"
-    assert path_length(bfs_path) == 7, "Test 4 FAILED: BFS did not find a shortest (7-move) path"
-    assert astar_expanded <= bfs_expanded, (
-        "Test 4 FAILED: A* with an admissible heuristic expanded more states than BFS"
-    )
+    assert path_length(astar_path) == path_length(bfs_path) == 7
+    assert astar_cost == 7
+    assert astar_expanded <= bfs_expanded
     print(
-        f"Test 4 PASSED: both found the 7-move shortest path; "
-        f"A* expanded {astar_expanded} states vs BFS's {bfs_expanded}"
+        f"Test 4 PASSED: both find 7 moves; A* evaluated {astar_expanded}, "
+        f"BFS evaluated {bfs_expanded} states"
     )
 
 
-if __name__ == "__main__":
+def test_5_parser_requires_exactly_one_start_and_goal():
+    invalid_maps = [
+        "###\n#S#\n###\n",
+        "#####\n#SGG#\n#####\n",
+        "#####\n#SSG#\n#####\n",
+        "#####\n#S.GS\n#####\n",
+    ]
+    for map_text in invalid_maps:
+        try:
+            parse_map(map_text)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"invalid map was accepted: {map_text!r}")
+    print("Test 5 PASSED: parser rejects missing or duplicate S/G markers")
+
+
+def test_6_requested_heuristic_experiments():
+    grid, rows, cols, start, goal = load("warehouse_map.txt")
+    results = heuristic_experiments(grid, rows, cols, start, goal)
+    assert [item["heuristic"] for item in results] == [
+        "Zero heuristic (h=0)", "Euclidean distance",
+        "Weighted Manhattan (2 x Manhattan)",
+    ]
+    assert results[0]["path_length"] == 40
+    assert results[1]["path_length"] == 40
+    assert results[2]["path_length"] is not None
+    for item in results:
+        assert item["expanded_states"] > 0
+        assert item["path_cost"] == item["path_length"]
+    print("Test 6 PASSED: h=0, Euclidean, and 2 x Manhattan experiments ran")
+    for item in results:
+        print(
+            f"  {item['heuristic']}: path={item['path_length']}, "
+            f"expanded={item['expanded_states']}"
+        )
+
+
+def test_7_zero_and_euclidean_match_bfs_optimum():
+    grid, rows, cols, start, goal = load("warehouse_map.txt")
+    bfs_path, _ = bfs(grid, rows, cols, start, goal)
+    for heuristic in (lambda a, b: 0.0, euclidean):
+        path, _, _ = astar(grid, rows, cols, start, goal, heuristic=heuristic)
+        assert path_length(path) == path_length(bfs_path)
+    print("Test 7 PASSED: zero and Euclidean heuristics preserve BFS optimality")
+
+
+def main():
     test_1_original_warehouse()
     test_2_trivial()
     test_3_no_solution()
     test_4_alternative_paths_are_shortest()
-    print("\nAll independent tests passed.")
+    test_5_parser_requires_exactly_one_start_and_goal()
+    test_6_requested_heuristic_experiments()
+    test_7_zero_and_euclidean_match_bfs_optimum()
+    print("\nAll independent search tests passed.")
+
+
+if __name__ == "__main__":
+    main()
