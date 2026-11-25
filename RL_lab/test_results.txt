@@ -1,0 +1,19 @@
+RL lab verification
+Command: python -m unittest -v test_rl_lab.py
+Result: 18 tests passed, 0 failed.
+
+Coverage:
+- Single-robot environment: boundary, obstacle, centre doorway, waiting, goal termination, action validation, and 40-step truncation.
+- Tabular TD update arithmetic: negative non-terminal reward, true terminal mask, and truncation bootstrap.
+- Epsilon schedule endpoints for the 1,200-episode decay and 80%-budget DQN decay.
+- Two-robot joint-action encode/decode and 50-input feature shape.
+- Two-robot same-cell collision, swap collision, entering a waiting robot cell, following into a vacated cell, and non-collision up/wait.
+- Goal occupancy, no repeated goal-arrival bonus, and collision reward priority.
+- DQN non-terminal/terminal/truncation target values and both network output dimensions.
+
+Measured seeded experiments:
+- Tabular Q-learning: 1,500 episodes, seed 7; final-50 success rate 100%; default greedy path 4 moves; additional start (0,0) succeeds in 6 moves.
+- Single-robot DQN: 12,000 environment steps, seed 7; 2,875 optimizer updates; default greedy path 4 moves; additional start succeeds in 6 moves.
+- Two-robot DQN: 60,000 joint environment steps, seed 7; 14,875 optimizer updates; 59 target synchronizations; default greedy policy succeeds in 9 joint steps and additional start A=(0,0), B=(4,4) succeeds in 10 joint steps. Both have zero collisions, timeouts, and invalid moves in greedy evaluation.
+
+Environment: Python 3.13.5, NumPy 2.3.5, Matplotlib 3.10.8, PyTorch 2.10.0+cpu. Small-network DQN runs call torch.set_num_threads(1) for CPU execution.
