@@ -1,0 +1,122 @@
+{
+  "training": {
+    "seed": 7,
+    "episodes": 1500,
+    "alpha": 0.2,
+    "gamma": 0.95,
+    "epsilon_start": 1,
+    "epsilon_after_decay": 0.050000000000000044,
+    "moving_average_window": 50,
+    "final_50_episode_success_rate": 1,
+    "final_50_episode_mean_return": 9.654
+  },
+  "greedy_default_start": {
+    "success": true,
+    "timeout": false,
+    "steps": 4,
+    "invalid_moves": 0,
+    "path": [
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        2,
+        4
+      ]
+    ],
+    "actions": [
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "greedy_additional_start_0_0": {
+    "success": true,
+    "timeout": false,
+    "steps": 6,
+    "invalid_moves": 0,
+    "path": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        2,
+        4
+      ]
+    ],
+    "actions": [
+      1,
+      1,
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "random_policy_100_episodes": {
+    "episodes": 100,
+    "seed": 17,
+    "success_rate": 0.15,
+    "timeout_rate": 0.85,
+    "mean_steps_successful": 22.6,
+    "mean_invalid_moves": 9.66
+  },
+  "shortest_route_steps": 4,
+  "shortest_route": [
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      2,
+      4
+    ]
+  ]
+}
