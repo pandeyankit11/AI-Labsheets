@@ -1,0 +1,91 @@
+{
+  "config": {
+    "total_steps": 12000,
+    "seed": 7,
+    "warmup_steps": 500,
+    "replay_capacity": 20000,
+    "batch_size": 64,
+    "update_every": 4,
+    "target_sync_updates": 250,
+    "learning_rate": 0.001,
+    "gamma": 0.95,
+    "epsilon_end_fraction": 0.8,
+    "epsilon_final": 0.05
+  },
+  "completed_episodes": 1455,
+  "training_success_rate": 0.9436426116838488,
+  "training_timeout_rate": 0.056357388316151204,
+  "training_mean_invalid_moves": 0.8192439862542955,
+  "final_50_episode_success_rate": 1,
+  "optimizer_updates": 2875,
+  "target_network_syncs": 11,
+  "last_loss": 0.0005744565278291702,
+  "evaluation": {
+    "default_start": {
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "steps": 4,
+      "invalid_moves": 0,
+      "path": [
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ]
+    },
+    "additional_start": {
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "steps": 6,
+      "invalid_moves": 0,
+      "path": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ]
+      ]
+    }
+  }
+}
