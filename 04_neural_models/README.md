@@ -9,7 +9,7 @@ This lab studies a tiny XOR problem to connect neural-network representation, ba
 - `test_lab.py` - automated checks for the main claims
 - `llm_prompt.txt` - behavioural specification used to generate the implementation
 - `report.pdf` - completed short report with results and reflection answers
-- `results/` - machine-readable and human-readable experiment outputs
+- `results/` - machine-readable and human-readable experiment outputs, including the actual first-layer gradient tensors from the activation runs
 
 ## Main experiments
 
