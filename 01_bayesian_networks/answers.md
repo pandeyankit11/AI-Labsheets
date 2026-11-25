@@ -208,10 +208,19 @@ For `cat`:
 
 ### Number of non-zero stored transition probabilities
 
-- First-order: 17
-- Second-order: 18
+- First-order: 17 non-zero conditional-probability entries.
+- Second-order: 18 non-zero trigram-successor entries plus 1 non-zero initial-token entry in `first_token_counts`, for 19 total. Earlier reporting of 18 omitted the initial-token distribution.
 
-The exact number of zero-probability contexts depends on how the context universe is defined. The second-order model has a much larger possible context space, so with only six training sentences it is substantially sparser.
+To quantify second-order sparsity, define V as the 10 distinct lexical tokens in the training data. A valid predictive context is either (START, v) or (u, v), where u and v are lexical tokens in V. END is terminal and cannot appear in a predictive context; START cannot appear in the second context position. The possible context count is (1 + |V|) * |V| = 110. Fourteen contexts are observed, leaving 96 unobserved / zero-probability contexts under this definition.
+
+| Measurement | First-order | Second-order |
+|---|---:|---:|
+| Non-zero learned conditional-probability entries | 17 | 19 |
+| Possible predictive contexts | 11 | 110 |
+| Observed predictive contexts | 11 | 14 |
+| Unobserved / zero-probability contexts | 0 | 96 |
+
+For first-order, the possible current-token contexts are START plus the 10 lexical tokens; all 11 occur in the corpus. The two context arities have different sample spaces, so their denominators should not be treated as directly equivalent.
 
 ### Expected qualitative behaviour
 
