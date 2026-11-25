@@ -4,77 +4,35 @@ AI LABSHEETS VERIFICATION SUMMARY
 Audit date: 25 November 2026
 Branch: complete-remaining-lab-tasks
 
-SOURCE AUDIT
-------------
-- 01_bayesian_networks/lab_sheet.pdf: 11 pages read.
-- 02_logic_hands_on/logic_lab_ex.pdf: 14 pages read.
-- 02_logic_hands_on/planning_lab_revised.pdf: 16 pages read.
-- 03_search_hands_on/AI_Lab_Search_AStar_Submission.docx: Search question sheet (Tasks 0–9), present and audited. It is a DOCX source handout, not a completed submission report; no separate Search PDF is required for this audit.
-- Search written responses and LLM prompt/evaluation are in 03_search_hands_on/search_answers.md. The LLM review is disclosed as generated in this ChatGPT session, not an external-model transcript.
+NEURAL MODELS: 04_neural_models/lab_sheet.pdf (7 pages)
+-------------------------------------------------------
+- Tasks 1-5 checked against the source sheet and mapped to REPORT.md, xor_lab.py, prompt, and results.
+- Linear affine baseline: final BCE loss 0.693147; 2/4 correct, consistent with XOR's non-linear separability.
+- Sigmoid / tanh / ReLU 2-2-1 networks: all four XOR labels correct; final losses about 0.002016 / 0.000688 / 0.000280.
+- Zero initialization: 6 recorded steps; hidden-layer rows identical, first-layer gradient norm zero, loss 0.693147.
+- Three-class 2-2-3 / CrossEntropy: predictions [0,1,1,2], all four correct, probability sums about 1, +100 logit shift error about 1.03e-9.
+- Added actual 2x2 first-layer gradient tensors immediately after backward and before optimizer step. Norms: sigmoid 0.00545327; tanh 0.00507735; ReLU 0.00486777. Matrices and scalar norms agree within floating-point tolerance.
+- A regression test for stored tensors was added to test_lab.py. The full Neural unittest suite was not run in this audit runtime; execute python -m unittest -v test_lab.py locally.
+- REPORT.md is the updated authoritative report. report.pdf is retained as the earlier PDF snapshot and was not regenerated for the new gradient appendix.
 
-TEST COMMANDS
--------------
-  cd 01_bayesian_networks && python3 -m unittest -v test_language_models.py
-  cd 01_bayesian_networks && python3 run_lab.py
-  cd 02_logic_hands_on && python3 test_planner.py
-  cd 02_logic_hands_on && python3 planner.py
-  cd 03_search_hands_on && python3 test_search.py
-  cd 03_search_hands_on && python3 search_agent.py
+REINFORCEMENT LEARNING: RL_lab/RL_lab_2026.pdf (13 pages)
+---------------------------------------------------------
+Test command (from RL_lab): python -m unittest -v test_rl_lab.py
+Result: 18 tests passed, 0 failed.
+python -m compileall -q . completed successfully.
 
-LATEST LOCAL TEST SUMMARY
--------------------------
-Bayesian unit tests: 7 passed, 0 failed. Raw output: 01_bayesian_networks/test_results.txt.
-Logical-planning checks: 12 passed, 0 failed. Raw output: 02_logic_hands_on/test_results.txt.
-Search checks: 9 passed, 0 failed. Raw output: 03_search_hands_on/test_results.txt.
-compileall completed successfully for all three Python lab folders.
+Key source corrections:
+- Cell (2,2) is an open doorway; shortest route from (2,0) to (2,4) is 4 steps.
+- Task 4 synthetic nonterminal reward is -1: target 0.9 and updated Q 0.5 for Q=0.4, alpha=0.2, gamma=0.95, max next Q=2.
+- True terminal reward +5 gives target 5 and updated Q 1.32.
+- Truncation bootstraps using the final next state before reset; only true termination suppresses bootstrap.
+- DQN seeds are set before model construction; target sync counts optimizer updates (every 250).
+- Two-robot tests distinguish same-cell collision, swap, entering a waiting robot's cell, and following into a vacated cell.
 
-BAYESIAN MEASUREMENTS
----------------------
-20 sampled outputs per model:
-  First-order: 10 distinct outputs.
-  Second-order: 6 distinct outputs.
-Five greedy runs per model:
-  First-order: 1 distinct output; strict argmax cycles and each run is capped at 12 tokens.
-  Second-order: 1 distinct complete output, reaching END.
-  First-order non-zero conditional-probability entries: 17.
-  Second-order: 18 trigram-successor entries + 1 initial-token probability = 19.
-  Second-order context universe: 110 possible, 14 observed, 96 unobserved.
+Measured experiment summaries (seed 7):
+- Tabular Q-learning, 1,500 episodes: final-50 success 100%; greedy default path 4 steps; additional start (0,0) succeeds in 6; random baseline, 100 episodes, seed 17: 15% success.
+- Single DQN, 12,000 environment steps: 1,455 episodes; training success 94.36%; 2,875 optimizer updates; 11 target syncs; frozen greedy default path 4 steps; additional start succeeds in 6.
+- Two-robot DQN, 60,000 joint steps: 2,166 episodes; training success 28.90%, collision 28.53%, timeout 42.57%; last-50 success 96%; 14,875 optimizer updates; 59 target syncs. Frozen greedy evaluation: default succeeds in 9 joint steps; required additional start succeeds in 10; both with zero collision, timeout, and invalid moves.
+- Two-robot training failure rates are retained in the report; greedy success is not misrepresented as high training success or universal generalization.
 
-LOGICAL PLANNING MEASUREMENTS
------------------------------
-Original warehouse plan:
-  PickUp(package,a) -> Move(a,b) -> Move(b,c) -> Drop(package,c)
-  4 actions.
-Revised locked-door shortest plan:
-  PickKey -> Move(A,B) -> Unlock -> Move(B,C)
-  4 actions.
-Removing PickKey: no plan.
-Invalid Move(A,B) -> Unlock -> Move(B,C):
-  first failure at step 2 (Unlock), missing HasKey.
-Revised candidate plan validates, reaches At(C), and matches BFS length 4.
-Exactly one At(A)/At(B)/At(C) proposition holds in every state in the returned trace.
-
-SEARCH HEURISTIC EXPERIMENTS
-----------------------------
-Path length / states expanded, original map:
-  BFS: 40 / 64
-  h=0: 40 / 64
-  Euclidean: 40 / 64
-  Manhattan: 40 / 64
-  2x Manhattan: 40 / 67
-  5x Manhattan: 40 / 84
-Branching map:
-  BFS: 7 / 18
-  h=0: 7 / 18
-  Euclidean: 7 / 14
-  Manhattan: 7 / 14
-  2x Manhattan: 7 / 14
-  5x Manhattan: 9 / 11 (valid but not shortest)
-Other maps:
-  Trivial: 1 move / 2 evaluated states.
-  Unreachable: no path / 9 evaluated states.
-
-Expansion convention:
-  Count each non-stale frontier removal evaluated, including the terminal goal. A* re-expansions after a strictly improved g-score count again.
-
-The Search DOCX question sheet is preserved unchanged. Written Search answers are in search_answers.md; heuristic tables and captured test/run evidence are stored beside the code. See TASK_AUDIT.md for the sheet-by-sheet coverage and limitations.
+See TASK_AUDIT.md and lab-local reports/results for complete source mapping and output evidence.
