@@ -1,34 +1,20 @@
 # Lab 4 - Neural Models: Learning, Depth, Activations, and Output Layers
 
-This lab studies a tiny XOR problem to connect neural-network representation, backpropagation, activations, output/loss pairing, symmetry, and validation.
+Question sheet: lab_sheet.pdf (7 pages).
 
 ## Contents
-
-- `lab_sheet.pdf` - original laboratory sheet
-- `xor_lab.py` - complete PyTorch implementation and experiments
-- `test_lab.py` - automated checks for the main claims
-- `llm_prompt.txt` - behavioural specification used to generate the implementation
-- `report.pdf` - completed short report with results and reflection answers
-- `results/` - machine-readable and human-readable experiment outputs, including the actual first-layer gradient tensors from the activation runs
-
-## Main experiments
-
-1. Linear affine + sigmoid baseline on XOR
-2. 2-2-1 XOR network with sigmoid, tanh, and ReLU hidden activations
-3. Zero-initialisation symmetry experiment
-4. Three-class output extension with softmax probabilities / CrossEntropyLoss
-5. Softmax shift-invariance diagnostic
+- xor_lab.py: linear XOR baseline, 2-2-1 binary XOR network, zero-initialization symmetry check, activation comparison, three-class extension, and softmax shift-invariance diagnostic.
+- test_lab.py: regression checks for XOR, symmetry, three-class outputs, and saved first-layer gradient tensors.
+- REPORT.md: authoritative updated write-up with the problem sketch, task explanations, gradient matrices, numerical results, and reflection answers.
+- llm_prompt.txt: behavioural specification used for the implementation.
+- results/: activation metrics, first-layer gradient matrices, symmetry/three-class results, and human-readable run output.
+- test_results.txt: test coverage and numerical gradient evidence.
+- report.pdf: original PDF snapshot retained from the earlier submission; it has not been regenerated to include the newly saved gradient-tensor appendix. Use REPORT.md as the current report.
 
 ## Run
 
-```bash
-python3 xor_lab.py
-```
+    python3 -m pip install -r requirements.txt
+    python3 xor_lab.py
+    python3 -m unittest -v test_lab.py
 
-## Test
-
-```bash
-python3 -m unittest -v
-```
-
-CPU is sufficient for this lab.
+The captured gradient tensor is the 2x2 fc1.weight.grad immediately after the first backward pass and before the optimizer update. Its Frobenius norm matches the saved scalar norm for each activation.
