@@ -9,7 +9,8 @@ SOURCE AUDIT
 - 01_bayesian_networks/lab_sheet.pdf: 11 pages read.
 - 02_logic_hands_on/logic_lab_ex.pdf: 14 pages read.
 - 02_logic_hands_on/planning_lab_revised.pdf: 16 pages read.
-- No Search lab question-sheet PDF is present in 03_search_hands_on in the current branch tree. The detailed Search submission DOCX was inspected as the available substitute, but exact question-sheet verification remains unconfirmed.
+- 03_search_hands_on/AI_Lab_Search_AStar_Submission.docx: Search question sheet (Tasks 0–9), present and audited. It is a DOCX source handout, not a completed submission report; no separate Search PDF is required for this audit.
+- Search written responses and LLM prompt/evaluation are in 03_search_hands_on/search_answers.md. The LLM review is disclosed as generated in this ChatGPT session, not an external-model transcript.
 
 TEST COMMANDS
 -------------
@@ -76,4 +77,4 @@ Other maps:
 Expansion convention:
   Count each non-stale frontier removal evaluated, including the terminal goal. A* re-expansions after a strictly improved g-score count again.
 
-The original DOCX submission reports are retained unchanged. New Markdown supplements and captured run/test evidence are stored beside the relevant code. See TASK_AUDIT.md for the sheet-by-sheet coverage and limitations.
+The Search DOCX question sheet is preserved unchanged. Written Search answers are in search_answers.md; heuristic tables and captured test/run evidence are stored beside the code. See TASK_AUDIT.md for the sheet-by-sheet coverage and limitations.
