@@ -22,6 +22,16 @@ The output is a binary warning `y ∈ {0,1}` indicating sensor disagreement.
 
 The positive examples are `(0,1)` and `(1,0)`, while the negative examples are `(0,0)` and `(1,1)`. There is no single straight line that separates the two classes. Therefore a single affine decision function followed by a sigmoid cannot represent XOR exactly.
 
+Coordinate sketch (rows are x2, columns are x1):
+
+```text
+                 x1=0        x1=1
+x2=1              1            0
+x2=0              0            1
+```
+
+The positive labels occupy opposite corners, which is why one linear decision boundary cannot separate the classes.
+
 ### Linear-model prediction
 
 A single affine layer followed by a sigmoid was trained as a baseline. Its loss converged to approximately `0.693147`, with probabilities near `0.5`, and it classified only 2/4 examples correctly. This is consistent with the non-linearly separable structure of XOR.
@@ -123,6 +133,16 @@ After `loss.backward()`, `model.fc1.weight.grad` represents the gradient of the 
 With a mean loss over the four training examples, the gradient is the mean of the corresponding example-wise gradients because differentiation is linear over the averaged loss:
 
 `∂[(1/4)Σ_i L_i]/∂W = (1/4)Σ_i ∂L_i/∂W`.
+
+The implementation now saves the **actual first-layer weight gradient tensor** from the first backward pass, before the optimiser update. The measured tensors are:
+
+| Hidden activation | First-layer gradient tensor | Euclidean norm |
+|---|---|---:|
+| Sigmoid | `[[0.00046187, 0.00054753], [0.00371669, 0.00392572]]` | 0.00545327 |
+| Tanh | `[[-0.00057526, 0.00048022], [0.00210109, 0.00456107]]` | 0.00507735 |
+| ReLU | `[[0.00067239, -0.00013156], [0.00472963, -0.00092539]]` | 0.00486777 |
+
+Each matrix is 2-by-2 because the first layer has two hidden neurons and two input weights per neuron. The test suite checks that the stored tensor norm reproduces the recorded scalar gradient norm to floating-point tolerance.
 
 ### 4C. Symmetry experiment
 
