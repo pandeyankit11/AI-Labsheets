@@ -1,22 +1,53 @@
 # AI Labsheets
 
-Laboratory assignments, implementations, tests, and submissions for the Artificial Intelligence course.
+Laboratory assignments, implementations, independent tests, generated evidence, and submission supplements for the Artificial Intelligence course.
 
-## Labs
+## 01. Bayesian Networks and Autoregressive Language Models
 
-### 01. Bayesian Networks
-Bayesian Networks and Autoregressive Language Models
+Directory: `01_bayesian_networks/`
 
-### 02. Logic Hands-on
-Logical planning and Prolog/Python implementation
+- First-order and second-order language models with sampling and greedy generation.
+- Probability normalization tests.
+- Corrected second-order parameter count, including the initial-token distribution.
+- Explicit second-order context universe and zero-context count.
+- Evidence: `answers.md`, `lab_output.txt`, `generated_examples.txt`, and `reflection.md`.
 
-### 03. Search Hands-on
-A* search and search-agent implementation
+## 02. Logical Planning
 
-## Repository Structure
+Directory: `02_logic_hands_on/`
 
-Each lab is maintained in a separate directory containing its implementation, tests, supporting files, and submission material where applicable.
+- Original warehouse STRIPS planner retained.
+- Revised locked-door/key domain with six actions.
+- BFS shortest plan: `PickKey -> Move(A,B) -> Unlock -> Move(B,C)`.
+- Impossible case without `PickKey`.
+- `validate_plan()` reports the first unsatisfied precondition in a proposed plan.
+- Supplement: `locked_door_results.md`.
 
-## Running the Python Labs
+## 03. Search and A*
 
-Each lab may have its own test file. Run the tests from inside the corresponding lab directory.
+Directory: `03_search_hands_on/`
+
+- BFS and A* on the original warehouse map and three test maps.
+- Consistent expansion-event counting and exact `S`/`G` map-marker validation.
+- Experiments for `h=0`, Euclidean distance, and `2 x Manhattan`.
+- Supplement: `heuristic_experiments.md`.
+
+## Run all checks
+
+```bash
+cd 01_bayesian_networks
+python3 -m unittest -v test_language_models.py
+python3 run_lab.py
+
+cd ../02_logic_hands_on
+python3 test_planner.py
+python3 planner.py
+
+cd ../03_search_hands_on
+python3 test_search.py
+python3 search_agent.py
+```
+
+The checked outputs are summarized in `verification_results.txt`. Local verification recorded 7 Bayesian unit tests, 8 planning checks, and 7 search checks passing.
+
+The original DOCX submission files are retained unchanged. The revised planning and heuristic-experiment evidence has been added as adjacent Markdown supplements; those DOCX reports still need to be updated before treating the full formatted submission package as final.
