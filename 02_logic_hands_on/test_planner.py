@@ -1,70 +1,118 @@
-"""
-Independent tests for planner.py (Task 3 of the lab).
-
-These tests do NOT trust the LLM's explanation of its own code; they
-re-run the generated planner and check the actual states/plans it
-produces against the warehouse specification worked out by hand in
-Task 0 / Task 1.
-"""
+"""Independent tests for the warehouse and revised locked-door planners."""
 
 from planner import (
-    make_move_actions, make_pickup_actions, make_drop_actions,
-    bfs_plan, goal_satisfied,
+    LOCKED_DOOR_GOAL,
+    LOCKED_DOOR_INITIAL_STATE,
+    bfs_plan,
+    goal_satisfied,
+    make_drop_actions,
+    make_locked_door_actions,
+    make_move_actions,
+    make_pickup_actions,
+    validate_plan,
 )
 
 INITIAL_STATE = {"at(robot,a)", "at(package,a)"}
 GOAL = {"at(package,c)"}
 
 
-def test_A_solvable():
-    """Test A: the original problem must be solvable, and every action
-    in the returned plan must actually be applicable in the state
-    before it (independently re-checked here, not just trusted)."""
+def test_A_warehouse_solvable():
     actions = make_move_actions() + make_pickup_actions() + make_drop_actions()
     plan, trace = bfs_plan(INITIAL_STATE, actions, GOAL)
-
-    assert plan is not None, "Test A FAILED: expected a plan, got None"
-    # Re-verify every step by hand: preconditions hold before, effects hold after
-    for i, action in enumerate(plan):
-        state_before = trace[i]
-        state_after = trace[i + 1]
-        assert action.is_applicable(state_before), (
-            f"Test A FAILED: {action} not applicable in {sorted(state_before)}"
-        )
-        assert action.apply(state_before) == state_after, (
-            f"Test A FAILED: {action} effects mismatch"
-        )
-    assert goal_satisfied(trace[-1], frozenset(GOAL)), "Test A FAILED: final state does not satisfy goal"
-    print(f"Test A PASSED: plan = {[str(a) for a in plan]}")
+    assert plan is not None
+    for index, action in enumerate(plan):
+        assert action.is_applicable(trace[index])
+        assert action.apply(trace[index]) == trace[index + 1]
+    assert goal_satisfied(trace[-1], frozenset(GOAL))
+    assert [str(action) for action in plan] == [
+        "PickUp(package,a)", "Move(a,b)", "Move(b,c)", "Drop(package,c)"
+    ]
+    print(f"Test A PASSED: warehouse plan = {[str(a) for a in plan]}")
 
 
-def test_B_unsolvable_without_pickup():
-    """Test B: with PickUp removed, no plan should exist -- the planner
-    must report failure, not invent a way to move the package."""
-    actions = make_move_actions() + make_drop_actions()  # no PickUp
+def test_B_warehouse_unsolvable_without_pickup():
+    actions = make_move_actions() + make_drop_actions()
     plan, trace = bfs_plan(INITIAL_STATE, actions, GOAL)
-    assert plan is None, "Test B FAILED: planner found a plan without PickUp available!"
-    print("Test B PASSED: planner correctly reports No plan found")
+    assert plan is None and trace is None
+    print("Test B PASSED: warehouse domain is unsolvable without PickUp")
 
 
-def test_C_goal_is_about_the_package_not_the_robot():
-    """Test C: reaching C with the robot alone must NOT satisfy a goal
-    that is stated in terms of the package's location."""
+def test_C_goal_is_about_package_not_robot():
     robot_only_at_c = frozenset({"at(robot,c)", "at(package,a)"})
     both_at_c = frozenset({"at(robot,c)", "at(package,c)"})
-    goal = frozenset(GOAL)
+    assert not goal_satisfied(robot_only_at_c, frozenset(GOAL))
+    assert goal_satisfied(both_at_c, frozenset(GOAL))
+    print("Test C PASSED: package goal is checked independently")
 
-    assert not goal_satisfied(robot_only_at_c, goal), (
-        "Test C FAILED: goal incorrectly satisfied by robot location alone"
+
+def test_D_locked_door_shortest_plan_has_four_actions():
+    actions = make_locked_door_actions()
+    plan, trace = bfs_plan(LOCKED_DOOR_INITIAL_STATE, actions, LOCKED_DOOR_GOAL)
+    assert plan is not None
+    assert [action.name for action in plan] == [
+        "PickKey", "Move(A,B)", "Unlock", "Move(B,C)"
+    ]
+    assert len(plan) == 4
+    for index, action in enumerate(plan):
+        assert action.is_applicable(trace[index])
+        assert action.apply(trace[index]) == trace[index + 1]
+    assert goal_satisfied(trace[-1], LOCKED_DOOR_GOAL)
+    print(f"Test D PASSED: shortest locked-door plan = {[a.name for a in plan]}")
+
+
+def test_E_locked_door_unsolvable_without_pick_key():
+    actions = [action for action in make_locked_door_actions() if action.name != "PickKey"]
+    plan, trace = bfs_plan(LOCKED_DOOR_INITIAL_STATE, actions, LOCKED_DOOR_GOAL)
+    assert plan is None and trace is None
+    print("Test E PASSED: no plan exists when PickKey is removed")
+
+
+def test_F_invalid_llm_plan_reports_first_unsatisfied_precondition():
+    proposed = ["Move(A,B)", "Unlock", "Move(B,C)"]
+    result = validate_plan(LOCKED_DOOR_INITIAL_STATE, make_locked_door_actions(), proposed)
+    assert result["valid"] is False
+    assert result["step"] == 2
+    assert result["action"] == "Unlock"
+    assert result["missing_positive_preconditions"] == ["has(key)"]
+    assert result["violated_negative_preconditions"] == []
+    print("Test F PASSED: first invalid action is Unlock; missing precondition has(key)")
+
+
+def test_G_unknown_llm_action_is_reported():
+    result = validate_plan(
+        LOCKED_DOOR_INITIAL_STATE, make_locked_door_actions(), ["FlyToMoon"]
     )
-    assert goal_satisfied(both_at_c, goal), (
-        "Test C FAILED: goal not recognised even when package is at C"
+    assert result["valid"] is False
+    assert result["step"] == 1
+    assert result["reason"] == "unknown action"
+    print("Test G PASSED: unknown proposed actions are rejected explicitly")
+
+
+def test_H_bfs_respects_max_nodes_budget():
+    try:
+        bfs_plan(LOCKED_DOOR_INITIAL_STATE, make_locked_door_actions(), LOCKED_DOOR_GOAL, max_nodes=0)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("max_nodes=0 must be rejected")
+    limited_plan, _ = bfs_plan(
+        LOCKED_DOOR_INITIAL_STATE, make_locked_door_actions(), LOCKED_DOOR_GOAL, max_nodes=1
     )
-    print("Test C PASSED: goal check correctly distinguishes robot vs. package location")
+    assert limited_plan is None
+    print("Test H PASSED: BFS node budget is enforced")
+
+
+def main():
+    test_A_warehouse_solvable()
+    test_B_warehouse_unsolvable_without_pickup()
+    test_C_goal_is_about_package_not_robot()
+    test_D_locked_door_shortest_plan_has_four_actions()
+    test_E_locked_door_unsolvable_without_pick_key()
+    test_F_invalid_llm_plan_reports_first_unsatisfied_precondition()
+    test_G_unknown_llm_action_is_reported()
+    test_H_bfs_respects_max_nodes_budget()
+    print("\nAll independent planner tests passed.")
 
 
 if __name__ == "__main__":
-    test_A_solvable()
-    test_B_unsolvable_without_pickup()
-    test_C_goal_is_about_the_package_not_the_robot()
-    print("\nAll independent tests passed.")
+    main()
