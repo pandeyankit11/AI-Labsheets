@@ -1,0 +1,109 @@
+{
+  "architecture": "2-2-1 with tanh",
+  "initialisation": "all weights and biases = 0",
+  "rows": [
+    {
+      "step": 0,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "step": 1,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "step": 2,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "step": 3,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "step": 4,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "step": 5,
+      "loss": 0.6931471824645996,
+      "row_difference": 0.0,
+      "gradient_row_difference": 0.0,
+      "gradient_norm": 0.0,
+      "weights": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "conclusion": "The hidden-unit rows remain identical and the first-layer gradient is zero because the identical hidden units receive identical inputs/outputs and the output-layer weights start at zero, so no symmetry-breaking signal reaches W1."
+}

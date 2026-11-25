@@ -1,0 +1,172 @@
+=== LINEAR XOR BASELINE ===
+{
+  "model_type": "single affine + sigmoid output",
+  "initial_loss": 0.6993840932846069,
+  "final_loss": 0.6931471824645996,
+  "probabilities": [
+    0.5,
+    0.4999999403953552,
+    0.5,
+    0.4999999403953552
+  ],
+  "predictions": [
+    1,
+    0,
+    1,
+    0
+  ],
+  "correct": 2,
+  "steps": 1000,
+  "learning_rate": 0.05,
+  "seed": 2
+}
+
+=== ACTIVATION EXPERIMENT ===
+{
+  "model_type": "2-2-1",
+  "activation": "sigmoid",
+  "initial_loss": 0.6984537839889526,
+  "final_loss": 0.0020160169806331396,
+  "probabilities": [
+    0.001775905373506248,
+    0.9979044198989868,
+    0.997878909111023,
+    0.002063002670183778
+  ],
+  "predictions": [
+    0,
+    1,
+    1,
+    0
+  ],
+  "early_first_layer_grad_norm": 0.005453265737742186,
+  "steps": 1000,
+  "learning_rate": 0.05,
+  "seed": 2
+}
+{
+  "model_type": "2-2-1",
+  "activation": "tanh",
+  "initial_loss": 0.6932286024093628,
+  "final_loss": 0.0006884848698973656,
+  "probabilities": [
+    0.0005375312175601721,
+    0.9992450475692749,
+    0.9990590214729309,
+    0.0005190958036109805
+  ],
+  "predictions": [
+    0,
+    1,
+    1,
+    0
+  ],
+  "early_first_layer_grad_norm": 0.005077346693724394,
+  "steps": 1000,
+  "learning_rate": 0.05,
+  "seed": 2
+}
+{
+  "model_type": "2-2-1",
+  "activation": "ReLU",
+  "initial_loss": 0.6936668753623962,
+  "final_loss": 0.00028014229610562325,
+  "probabilities": [
+    0.00015656916366424412,
+    0.9995694756507874,
+    0.9995694756507874,
+    0.00010343733447371051
+  ],
+  "predictions": [
+    0,
+    1,
+    1,
+    0
+  ],
+  "early_first_layer_grad_norm": 0.004867766052484512,
+  "steps": 1000,
+  "learning_rate": 0.05,
+  "seed": 2
+}
+
+=== SYMMETRY EXPERIMENT ===
+{'step': 0, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+{'step': 1, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+{'step': 2, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+{'step': 3, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+{'step': 4, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+{'step': 5, 'loss': 0.6931471824645996, 'row_difference': 0.0, 'gradient_row_difference': 0.0, 'gradient_norm': 0.0, 'weights': [[0.0, 0.0], [0.0, 0.0]]}
+
+=== THREE-CLASS EXTENSION ===
+{
+  "architecture": "2-2-3",
+  "hidden_activation": "tanh",
+  "output": "3 logits + CrossEntropyLoss",
+  "initial_loss": 1.0408512353897095,
+  "final_loss": 0.00016485205560456961,
+  "logits": [
+    [
+      8.800383567810059,
+      0.350490003824234,
+      -6.531455993652344
+    ],
+    [
+      0.015451000072062016,
+      9.542022705078125,
+      -0.31094300746917725
+    ],
+    [
+      -0.10817199945449829,
+      9.5305814743042,
+      -0.1958550065755844
+    ],
+    [
+      -6.4756760597229,
+      -0.8906970024108887,
+      7.656109809875488
+    ]
+  ],
+  "probabilities": [
+    [
+      0.9997860193252563,
+      0.00021399999968707561,
+      0.0
+    ],
+    [
+      7.300000288523734e-05,
+      0.999875009059906,
+      5.2999999752501026e-05
+    ],
+    [
+      6.500000017695129e-05,
+      0.999875009059906,
+      5.999999848427251e-05
+    ],
+    [
+      9.999999974752427e-07,
+      0.0001939999929163605,
+      0.9998049736022949
+    ]
+  ],
+  "probability_sums": [
+    0.9999999403953552,
+    1.0000001192092896,
+    0.9999998807907104,
+    1.0
+  ],
+  "predictions": [
+    0,
+    1,
+    1,
+    2
+  ],
+  "accuracy": 1.0,
+  "max_shift_invariance_error": 1.0331859812140465e-09,
+  "final_weight_shape": [
+    3,
+    2
+  ],
+  "seed": 2,
+  "steps": 1000,
+  "learning_rate": 0.05
+}
