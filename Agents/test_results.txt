@@ -1,0 +1,25 @@
+test_actions_match_path_length (test_goal_based_agent.GoalBasedAgentTests.test_actions_match_path_length) ... ok
+test_available_actions_are_exactly_four_orthogonal_moves (test_goal_based_agent.GoalBasedAgentTests.test_available_actions_are_exactly_four_orthogonal_moves) ... ok
+test_deterministic_tie_breaking (test_goal_based_agent.GoalBasedAgentTests.test_deterministic_tie_breaking) ... ok
+test_every_path_cell_is_free (test_goal_based_agent.GoalBasedAgentTests.test_every_path_cell_is_free) ... ok
+test_every_path_step_is_one_orthogonal_move (test_goal_based_agent.GoalBasedAgentTests.test_every_path_step_is_one_orthogonal_move) ... ok
+test_finds_path_on_supplied_warehouse (test_goal_based_agent.GoalBasedAgentTests.test_finds_path_on_supplied_warehouse) ... ok
+test_no_path_is_reported (test_goal_based_agent.GoalBasedAgentTests.test_no_path_is_reported) ... ok
+test_none_path_has_no_route_markers (test_goal_based_agent.GoalBasedAgentTests.test_none_path_has_no_route_markers) ... ok
+test_open_corridor_returns_direct_route (test_goal_based_agent.GoalBasedAgentTests.test_open_corridor_returns_direct_route) ... ok
+test_path_is_shortest_for_supplied_map (test_goal_based_agent.GoalBasedAgentTests.test_path_is_shortest_for_supplied_map) ... ok
+test_path_to_actions_rejects_non_adjacent_steps (test_goal_based_agent.GoalBasedAgentTests.test_path_to_actions_rejects_non_adjacent_steps) ... ok
+test_renderer_marks_only_intermediate_route_cells (test_goal_based_agent.GoalBasedAgentTests.test_renderer_marks_only_intermediate_route_cells) ... ok
+test_out_of_bounds_is_not_free (test_goal_based_agent.WarehouseParsingTests.test_out_of_bounds_is_not_free) ... ok
+test_rejects_duplicate_start_and_goal (test_goal_based_agent.WarehouseParsingTests.test_rejects_duplicate_start_and_goal) ... ok
+test_rejects_empty_map (test_goal_based_agent.WarehouseParsingTests.test_rejects_empty_map) ... ok
+test_rejects_missing_goal (test_goal_based_agent.WarehouseParsingTests.test_rejects_missing_goal) ... ok
+test_rejects_missing_start (test_goal_based_agent.WarehouseParsingTests.test_rejects_missing_start) ... ok
+test_rejects_ragged_rows (test_goal_based_agent.WarehouseParsingTests.test_rejects_ragged_rows) ... ok
+test_rejects_unsupported_symbol (test_goal_based_agent.WarehouseParsingTests.test_rejects_unsupported_symbol) ... ok
+test_supplied_map_dimensions_and_markers (test_goal_based_agent.WarehouseParsingTests.test_supplied_map_dimensions_and_markers) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.001s
+
+OK

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">Goal-based warehouse navigation agent architecture</title>
+  <desc id="desc">A warehouse grid and current position feed the state representation. The goal coordinate and transition rules feed a BFS planner, which selects a legal action. The vehicle moves in the warehouse and the updated position is fed back as the next state.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#253858"/></marker>
+    <style>
+      .box { fill: #f2f6fc; stroke: #24446b; stroke-width: 2.4; rx: 15; }
+      .goal { fill: #fff4d6; stroke: #9a6a00; stroke-width: 2.4; rx: 15; }
+      .agent { fill: #e1f3ec; stroke: #18734f; stroke-width: 2.8; rx: 15; }
+      .action { fill: #f4eafa; stroke: #74409a; stroke-width: 2.4; rx: 15; }
+      .heading { font: bold 23px Arial, sans-serif; fill: #172b4d; }
+      .body { font: 17px Arial, sans-serif; fill: #253858; }
+      .small { font: 15px Arial, sans-serif; fill: #44546a; }
+      .line { fill: none; stroke: #253858; stroke-width: 2.8; marker-end: url(#arrow); }
+      .feedback { fill: none; stroke: #18734f; stroke-width: 2.8; stroke-dasharray: 9 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1200" height="690" fill="#ffffff"/>
+  <text x="600" y="48" text-anchor="middle" class="heading" font-size="29">Goal-Based Warehouse Navigation Agent</text>
+  <text x="600" y="78" text-anchor="middle" class="small">Plan toward an explicit goal, execute one legal move, then update the state</text>
+
+  <rect class="box" x="55" y="150" width="245" height="155"/>
+  <text x="177" y="188" text-anchor="middle" class="heading">Environment</text>
+  <text x="177" y="224" text-anchor="middle" class="body">Warehouse grid</text>
+  <text x="177" y="252" text-anchor="middle" class="body">Obstacles and free cells</text>
+  <text x="177" y="280" text-anchor="middle" class="body">Vehicle position</text>
+
+  <rect class="box" x="370" y="150" width="245" height="155"/>
+  <text x="492" y="188" text-anchor="middle" class="heading">State Representation</text>
+  <text x="492" y="224" text-anchor="middle" class="body">Current (row, column)</text>
+  <text x="492" y="252" text-anchor ="middle" class="body">Visited cells / parent links</text>
+  <text x="492" y="280" text-anchor="middle" class="body">Legal transitions</text>
+
+  <rect class="goal" x="370" y="390" width="245" height="120"/>
+  <text x="492" y="430" text-anchor="middle" class="heading">Goal</text>
+  <text x="492" y="465" text-anchor="middle" class="body">Destination coordinate G</text>
+  <text x="492" y="490" text-anchor="middle" class="small">Goal test: state == G</text>
+
+  <rect class="agent" x="700" y="220" width="245" height="170"/>
+  <text x="822" y="260" text-anchor="middle" class="heading">Decision Component</text>
+  <text x="822" y="300" text-anchor="middle" class="body">Breadth-First Search</text>
+  <text x="822" y="330" text-anchor="middle" class="body">Find shortest path</text>
+  <text x="822" y="360" text-anchor="middle" class="small">Frontier queue + parents</text>
+
+  <rect class="action" x="1010" y="220" width="160" height="170"/>
+  <text x="1090" y="260" text-anchor="middle" class="heading">Action</text>
+  <text x="1090" y="300" text-anchor ="middle" class="body">Up</text>
+  <text x="1090" y="326" text-anchor="middle" class="body">Down</text>
+  <text x="1090" y="352" text-anchor="middle" class="body">Left / Right</text>
+
+  <path class="line" d="M300 225 H365"/>
+  <path class="line" d="M615 225 H695"/>
+  <path class="line" d="M615 450 H665 V365 H695"/>
+  <path class="line" d="M945 305 H1005"/>
+
+  <rect class="box" x="825" y="505" width="290" height="105"/>
+  <text x="970" y="545" text-anchor="middle" class="heading">Vehicle / Execution</text>
+  <text x="970" y="578" text-anchor="middle" class="body">Apply one legal movement</text>
+  <path class="line" d="M1090 390 V475 H970 V500"/>
+
+  <path class="feedback" d="M825 555 H170 V315"/>
+  <text x="490" y="590" text-anchor="middle" class="small" fill="#18734f">Updated position becomes the next state (feedback loop)</text>
+  <text x="600" y="656" text-anchor="middle" class="small">Stop when the goal test succeeds, or report that no path exists.</text>
+</svg>

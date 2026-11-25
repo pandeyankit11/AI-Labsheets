@@ -1,9 +1,9 @@
 # AI Labsheets: Source-to-Deliverable Audit
 
-Audit date: 25 November 2026  
+Audit date: 26 November 2026  
 Branch: `complete-remaining-lab-tasks`
 
-This audit is based on the three supplied PDF lab sheets and the Search Word question sheet, `03_search_hands_on/AI_Lab_Search_AStar_Submission.docx`. The Search DOCX is the source handout for Tasks 0–9, not a completed submission report. The original Logic DOCX submission report was inspected separately.
+This audit is based on the supplied lab sheets and the Search Word question sheet, `03_search_hands_on/AI_Lab_Search_AStar_Submission.docx`. The Search DOCX is the source handout for Tasks 0–9, not a completed submission report. The original Logic DOCX submission report was inspected separately. The complete Agents question text was supplied in this conversation because the upload limit was reached; the original `Agents/agents_lab.pdf` is preserved unchanged, and the Agents audit below is mapped to the supplied text.
 
 ## 01 — Bayesian Networks (`lab_sheet.pdf`, 11 pages)
 
@@ -57,7 +57,7 @@ The Search DOCX is the question sheet and is present in `03_search_hands_on/`. I
 
 **Assessment:** The Search question sheet has been source-audited. Implementation, edge-case tests, heuristic experiments, written answers, and the LLM-prompt/evaluation section are present. The LLM section does not pretend that a separate third-party model was queried.
 
-## 04 — Neural Models (04_neural_models/lab_sheet.pdf, 7 pages)
+## 05 — Neural Models (04_neural_models/lab_sheet.pdf, 7 pages)
 
 | Source requirement | Deliverable and verification |
 |---|---|
@@ -73,7 +73,7 @@ The Search DOCX is the question sheet and is present in `03_search_hands_on/`. I
 
 Neural limitation: a regression test for saved gradient tensors was added to test_lab.py, but the full Neural unittest suite was not executed in this audit runtime. The matrix values and norms were independently checked numerically. REPORT.md is authoritative; report.pdf was not regenerated to include the gradient appendix.
 
-## 05 — Reinforcement Learning (RL_lab/RL_lab_2026.pdf, 13 pages)
+## 06 — Reinforcement Learning (RL_lab/RL_lab_2026.pdf, 13 pages)
 
 | Source requirement | Deliverable and verification |
 |---|---|
@@ -89,6 +89,22 @@ RL limitations: two-robot DQN training has a 28.90% episode success rate, 28.53%
 
 Verification: python -m unittest -v test_rl_lab.py returned 18 tests passed; python -m compileall -q . succeeded. The suite covers movement, open doorway, rewards, terminal/truncation, TD arithmetic, epsilon schedule, joint-action encoding, required collision cases, goal occupancy, target masking, and network output dimensions.
 
+## 07 — Goal-Based Agents (`Agents/agents_lab.pdf`)
+
+The source PDF remains in the repository unchanged. The assignment text was supplied in chat and used as the source specification for this implementation.
+
+| Sheet requirement | Deliverable and verification |
+|---|---|
+| Task 1: environment, goal, actions, maintained information, and goal-based vs reflex distinction | `REPORT.md` answers all five questions and identifies the static, fully known, discrete 7 × 21 grid. |
+| Think About It: warehouse twice as large | `REPORT.md` distinguishes doubling the number of cells from doubling both dimensions, explains BFS `O(V + E)` time and `O(V)` space, and discusses A* with an admissible Manhattan heuristic and other scaling options. |
+| Task 2: environment, current state, goal, actions, decision-making component | Design specification in `REPORT.md`; block diagram in `agent_architecture.svg`. |
+| Task 3: LLM-assisted specification, implementation, execution, and refinement | Initial and refined prompts plus an iteration/evaluation log in `PROMPT_ENGINEERING.md`; Task 3 answers Q1–Q4 in `REPORT.md`. ChatGPT usage is disclosed; no external-model transcript is claimed. |
+| Goal-based implementation | `goal_based_agent.py` parses and validates the map, models legal four-direction transitions, runs BFS with a FIFO frontier, tracks visited cells and parent links, and reconstructs the path or reports no path. |
+| Exact supplied warehouse map and run evidence | `warehouse_map.txt` preserves the 7 × 21 map; `lab_output.txt` records the 20-move path from `(1, 1)` to `(1, 19)` and the route-rendered map. |
+| Independent tests and edge cases | `test_goal_based_agent.py` and `test_results.txt`: 20 tests pass, covering map validation, legal moves, obstacle avoidance, reachability, shortest-path length, determinism, and rendering. `compileall` also succeeds. |
+
+**Assessment:** The supplied map is solved optimally for unit-cost moves. BFS is complete on the finite grid and returns a 20-move shortest path. The implementation is deliberately scoped to a static, known, single-vehicle warehouse; it does not claim to solve dynamic traffic or partial observability.
+
 ## Final assessment
 
 - Bayesian: implemented and documented, with first-order strict-greedy non-termination transparently disclosed.
@@ -97,5 +113,6 @@ Verification: python -m unittest -v test_rl_lab.py returned 18 tests passed; pyt
 - Search: source-audited against DOCX handout; implementation, test evidence, heuristic analysis, written answers, and LLM-review disclosure present.
 - Neural Models: code and report cover Tasks 1-5; actual gradient tensor evidence added; full automated suite still requires execution in a local Python/PyTorch environment.
 - RL: corrected implementations and report pushed; 18 targeted tests pass locally; two-robot policy succeeds on the two prescribed greedy evaluation starts, while exploration failures remain disclosed.
+- Agents: source text supplied in chat is implemented and documented; BFS returns the 20-move shortest path on the exact map; all 20 targeted unit tests and the compileall check pass.
 
 All updates are on complete-remaining-lab-tasks. The main branch is not modified.

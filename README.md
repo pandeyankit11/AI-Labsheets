@@ -39,6 +39,14 @@ Directory: RL_lab/
 - Correct termination-vs-truncation bootstrapping, fixed seed timing, target sync counted by optimizer updates, and collision-rule tests.
 - Evidence: lab_report_submission.md, test_rl_lab.py, test_results.txt, and results/ JSON/SVG artifacts.
 
+## 06. Goal-Based Agents
+Directory: Agents/
+
+- Goal-based warehouse navigation agent using Breadth-First Search (BFS).
+- Exact 7 × 21 map from the Agents question sheet, path reconstruction, named actions, and route visualization.
+- Task 1 problem analysis, Task 2 design and architecture diagram, Task 3 initial/refined prompts and LLM evaluation.
+- Evidence: REPORT.md, PROMPT_ENGINEERING.md, agent_architecture.svg, lab_output.txt, and test_results.txt.
+
 ## Run the checks
 
     cd 01_bayesian_networks && python3 -m unittest -v test_language_models.py
@@ -46,5 +54,6 @@ Directory: RL_lab/
     cd ../03_search_hands_on && python3 test_search.py
     cd ../04_neural_models && python3 -m unittest -v test_lab.py
     cd ../RL_lab && python3 -m unittest -v test_rl_lab.py
+    cd ../Agents && python3 -m unittest -v test_goal_based_agent.py
 
 verification_results.txt records test counts and measured outcomes. TASK_AUDIT.md maps available question sheets to implementations and deliverables. The original question sheets are preserved unchanged.
