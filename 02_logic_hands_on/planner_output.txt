@@ -1,0 +1,31 @@
+--- Warehouse test (solvable) ---
+Plan length: 4
+S0: ['at(package,a)', 'at(robot,a)']
+  --PickUp(package,a)-->
+S1: ['at(robot,a)', 'holding(package)']
+  --Move(a,b)-->
+S2: ['at(robot,b)', 'holding(package)']
+  --Move(b,c)-->
+S3: ['at(robot,c)', 'holding(package)']
+  --Drop(package,c)-->
+S4: ['at(package,c)', 'at(robot,c)']
+
+--- Warehouse test (PickUp removed) ---
+No plan found
+
+--- Revised locked-door domain ---
+Plan length: 4
+S0: ['At(A)', 'KeyAt(A)']
+  --PickKey-->
+S1: ['At(A)', 'HasKey']
+  --Move(A,B)-->
+S2: ['At(B)', 'HasKey']
+  --Unlock-->
+S3: ['At(B)', 'HasKey', 'Unlocked']
+  --Move(B,C)-->
+S4: ['At(C)', 'HasKey', 'Unlocked']
+
+Exactly one At(·) location in each trace state: True
+Plan without PickKey: No plan found
+Invalid LLM plan validation: valid=False, first_failure_step=2, action=Unlock, missing=['HasKey']
+Revised LLM plan: valid=True, reaches_goal=True, length=4, matches_BFS_length=True
