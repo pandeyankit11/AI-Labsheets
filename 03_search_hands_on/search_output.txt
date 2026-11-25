@@ -1,0 +1,28 @@
+Parsed original warehouse map: 9 rows x 17 columns; start=(1, 1); goal=(7, 15).
+
+A* (Manhattan) on original warehouse map:
+  Solution found: yes
+  Path length: 40 moves
+  Path cost: 40
+  States expanded/evaluated: 64
+
+BFS on original warehouse map:
+  Solution found: yes
+  Path length: 40 moves
+  States expanded/evaluated: 64
+
+Heuristic experiments on original warehouse map:
+  Zero heuristic (h=0): path_length=40, expanded_states=64, path_cost=40
+  Euclidean distance: path_length=40, expanded_states=64, path_cost=40
+  Manhattan distance: path_length=40, expanded_states=64, path_cost=40
+  Manhattan x 2: path_length=40, expanded_states=67, path_cost=40
+  Manhattan x 5: path_length=40, expanded_states=84, path_cost=40
+
+Heuristic experiments on branching alternative-path map:
+  Zero heuristic (h=0): path_length=7, expanded_states=18, path_cost=7
+  Euclidean distance: path_length=7, expanded_states=14, path_cost=7
+  Manhattan distance: path_length=7, expanded_states=14, path_cost=7
+  Manhattan x 2: path_length=7, expanded_states=14, path_cost=7
+  Manhattan x 5: path_length=9, expanded_states=11, path_cost=9
+
+Expansion convention: non-stale frontier removals evaluated; terminal goal included; A* re-expansions after a strictly improved g-score count again.
