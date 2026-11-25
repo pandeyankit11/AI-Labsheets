@@ -1,13 +1,13 @@
 # A* Heuristic Experiments and Expansion-Count Audit
 
-The detailed `AI_Lab_Search_AStar_Submission.docx` documents the original search exercise and Tasks 0–9, including problem formulation, A* and BFS implementation, the four maps, testing, heuristic investigation, LLM evaluation, and reflection. The separate Search question-sheet PDF is not present in the current `03_search_hands_on/` repository tree, so the task list could not be cross-checked against that original PDF. This supplement updates the experiment results using the current implementation and one consistent expansion-count definition.
+The source handout is `AI_Lab_Search_AStar_Submission.docx` (Tasks 0–9) in this directory. It is the Search question sheet, not a prior submission report. The written answers, problem formulation, BFS/A* explanation, LLM prompt/evaluation, and reflection are in `search_answers.md`. This supplement records the measured heuristic experiments using the current implementation and one consistent expansion-count definition.
 
 ## Experimental setup
 
 - Moves are four-connected (`Up`, `Down`, `Left`, `Right`), each with cost 1.
 - The primary heuristic sweep uses the original `warehouse_map.txt`. A second sweep uses `map_altpaths.txt`, which has genuine route alternatives and makes heuristic differences visible.
 - The five tested variants are `h=0`, Euclidean distance, Manhattan distance, `2 × Manhattan`, and `5 × Manhattan`.
-- The inflated Manhattan variants are weighted/inadmissible in general. Their observed path lengths are measured rather than assuming optimality.
+- The inflated Manhattan variants are weighted/inadmissible in general. Their observed path lengths are measured rather than assuming that they remain optimal.
 
 ## Original warehouse map
 
@@ -39,7 +39,7 @@ The branching map demonstrates a useful difference: admissible Euclidean/Manhatt
 
 `expanded_states` counts each non-stale state removed from a frontier and evaluated, including the terminal goal. BFS marks a state visited when it is enqueued, so duplicate states are not expanded. A* ignores stale heap entries and can reopen an already-expanded state if a strictly lower `g`-score is found; each such re-expansion counts as another expansion event. The goal is counted when popped, but its successors are not generated.
 
-Under this explicit convention, the branching-map BFS count is 18, not 17 as stated in the older DOCX. That older report used a convention which omitted the terminal goal in BFS's count. The present code and tests use one convention for both algorithms; this supplement supersedes the older expansion-count number without modifying the DOCX.
+Under this explicit convention, the branching-map BFS count is 18, not 17 as stated in the older question-sheet material. That older count omitted the terminal goal in BFS's count. The present code and tests use one convention for both algorithms; this supplement supersedes the older expansion-count number without modifying the question sheet.
 
 ## Other map checks
 
