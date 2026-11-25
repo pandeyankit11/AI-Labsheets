@@ -43,6 +43,32 @@ class LanguageModelTests(unittest.TestCase):
         self.assertEqual(self.first.probabilities_for("never-seen"), {})
         self.assertEqual(self.second.probabilities_for(("never", "seen")), {})
 
+    def test_parameter_count_includes_initial_distribution(self):
+        self.assertEqual(self.first.nonzero_parameters, 17)
+        # 18 trigram successor entries plus one P(the | START) entry.
+        self.assertEqual(self.second.nonzero_parameters, 19)
+
+    def test_second_order_context_sparsity_has_explicit_universe(self):
+        stats = self.second.context_statistics()
+        self.assertEqual(stats["lexical_vocabulary_size"], 10)
+        self.assertEqual(stats["possible_contexts"], 110)
+        self.assertEqual(stats["observed_contexts"], 14)
+        self.assertEqual(stats["zero_probability_contexts"], 96)
+
+    def test_five_greedy_runs_are_deterministic_for_each_model(self):
+        first_outputs = [
+            self.first.generate(Random(seed), greedy=True, max_tokens=12)
+            for seed in range(5)
+        ]
+        second_outputs = [
+            self.second.generate(Random(seed), greedy=True, max_tokens=30)
+            for seed in range(5)
+        ]
+        self.assertEqual(len(first_outputs), 5)
+        self.assertEqual(len(second_outputs), 5)
+        self.assertEqual(len(set(first_outputs)), 1)
+        self.assertEqual(len(set(second_outputs)), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
