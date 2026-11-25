@@ -147,61 +147,34 @@ def make_drop_actions(locations=LOCATIONS):
     ]
 
 
-# Revised locked-door domain
-LOCKED_DOOR_INITIAL_STATE = {
-    "at(robot,A)",
-    "at(key,A)",
-    "door_locked",
-}
-LOCKED_DOOR_GOAL = {"at(robot,C)"}
+# ---------------------------------------------------------------------------
+# Revised locked-door domain (exact propositions from planning_lab_revised.pdf)
+# ---------------------------------------------------------------------------
+
+LOCKED_DOOR_INITIAL_STATE = {"At(A)", "KeyAt(A)"}
+LOCKED_DOOR_GOAL = {"At(C)"}
+LOCKED_DOOR_LOCATIONS = {"At(A)", "At(B)", "At(C)"}
 
 
 def make_locked_door_actions():
-    """Six STRIPS actions for the A -> B -> C key-and-locked-door problem."""
+    """Encode the six actions exactly as listed in the revised question sheet.
+
+    The absence of Unlocked means the passage is still locked. There is no
+    separate Locked proposition in the sheet's declared state vocabulary.
+    """
     return [
-        Action(
-            name="PickKey",
-            pos_pre={"at(robot,A)", "at(key,A)"},
-            neg_pre=set(),
-            pos_eff={"has(key)"},
-            neg_eff={"at(key,A)"},
-        ),
-        Action(
-            name="Move(A,B)",
-            pos_pre={"at(robot,A)"},
-            neg_pre=set(),
-            pos_eff={"at(robot,B)"},
-            neg_eff={"at(robot,A)"},
-        ),
-        Action(
-            name="Move(B,A)",
-            pos_pre={"at(robot,B)"},
-            neg_pre=set(),
-            pos_eff={"at(robot,A)"},
-            neg_eff={"at(robot,B)"},
-        ),
-        Action(
-            name="Unlock",
-            pos_pre={"at(robot,B)", "has(key)", "door_locked"},
-            neg_pre=set(),
-            pos_eff={"door_unlocked"},
-            neg_eff={"door_locked"},
-        ),
-        Action(
-            name="Move(B,C)",
-            pos_pre={"at(robot,B)", "door_unlocked"},
-            neg_pre=set(),
-            pos_eff={"at(robot,C)"},
-            neg_eff={"at(robot,B)"},
-        ),
-        Action(
-            name="Move(C,B)",
-            pos_pre={"at(robot,C)"},
-            neg_pre=set(),
-            pos_eff={"at(robot,B)"},
-            neg_eff={"at(robot,C)"},
-        ),
+        Action("Move(A,B)", {"At(A)"}, set(), {"At(B)"}, {"At(A)"}),
+        Action("Move(B,A)", {"At(B)"}, set(), {"At(A)"}, {"At(B)"}),
+        Action("PickKey", {"At(A)", "KeyAt(A)"}, set(), {"HasKey"}, {"KeyAt(A)"}),
+        Action("Unlock", {"At(B)", "HasKey"}, set(), {"Unlocked"}, set()),
+        Action("Move(B,C)", {"At(B)", "Unlocked"}, set(), {"At(C)"}, {"At(B)"}),
+        Action("Move(C,B)", {"At(C)", "Unlocked"}, set(), {"At(B)"}, {"At(C)"}),
     ]
+
+
+def exactly_one_robot_location(state):
+    """Return True iff exactly one of At(A), At(B), At(C) is present."""
+    return len(LOCKED_DOOR_LOCATIONS.intersection(state)) == 1
 
 
 def print_result(label, plan, trace):
@@ -218,6 +191,7 @@ def print_result(label, plan, trace):
 
 
 def main():
+    # Original warehouse domain.
     initial_state = {"at(robot,a)", "at(package,a)"}
     goal = {"at(package,c)"}
     actions_full = make_move_actions() + make_pickup_actions() + make_drop_actions()
@@ -228,15 +202,21 @@ def main():
     plan_b, trace_b = bfs_plan(initial_state, actions_no_pickup, goal)
     print_result("Warehouse test (PickUp removed)", plan_b, trace_b)
 
+    # Revised locked-door domain.
     print("--- Revised locked-door domain ---")
     locked_actions = make_locked_door_actions()
     plan, trace = bfs_plan(LOCKED_DOOR_INITIAL_STATE, locked_actions, LOCKED_DOOR_GOAL)
     print_result("Locked-door shortest plan", plan, trace)
+    print(
+        "Exactly one At(·) location in each trace state:",
+        all(exactly_one_robot_location(state) for state in trace),
+    )
 
     no_key_actions = [action for action in locked_actions if action.name != "PickKey"]
     no_key_plan, _ = bfs_plan(LOCKED_DOOR_INITIAL_STATE, no_key_actions, LOCKED_DOOR_GOAL)
     print(f"Plan without PickKey: {'found' if no_key_plan else 'No plan found'}")
 
+    # Task 6(d): first error in the proposed plan.
     invalid_plan = ["Move(A,B)", "Unlock", "Move(B,C)"]
     validation = validate_plan(LOCKED_DOOR_INITIAL_STATE, locked_actions, invalid_plan)
     print(
@@ -244,6 +224,19 @@ def main():
         f"valid={validation['valid']}, first_failure_step={validation['step']}, "
         f"action={validation['action']}, "
         f"missing={validation['missing_positive_preconditions']}"
+    )
+
+    # Task 7: validator feedback is applied to a revised candidate.
+    revised_llm_plan = ["PickKey", "Move(A,B)", "Unlock", "Move(B,C)"]
+    revised_result = validate_plan(
+        LOCKED_DOOR_INITIAL_STATE, locked_actions, revised_llm_plan
+    )
+    print(
+        "Revised LLM plan: "
+        f"valid={revised_result['valid']}, "
+        f"reaches_goal={goal_satisfied(revised_result['final_state'], LOCKED_DOOR_GOAL)}, "
+        f"length={len(revised_llm_plan)}, "
+        f"matches_BFS_length={plan is not None and len(revised_llm_plan) == len(plan)}"
     )
 
 
