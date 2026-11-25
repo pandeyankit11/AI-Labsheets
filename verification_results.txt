@@ -1,57 +1,79 @@
 AI LABSHEETS VERIFICATION SUMMARY
 ================================
 
-Local execution environment: Python 3.13.5
-Test commands:
-  01_bayesian_networks: python3 -m unittest -v test_language_models.py
-  01_bayesian_networks: python3 run_lab.py
-  02_logic_hands_on: python3 test_planner.py
-  02_logic_hands_on: python3 planner.py
-  03_search_hands_on: python3 test_search.py
-  03_search_hands_on: python3 search_agent.py
+Audit date: 25 November 2026
+Branch: complete-remaining-lab-tasks
 
-RESULTS
--------
-Bayesian language-model tests: 7 passed, 0 failed.
-Logical-planning checks: 8 passed, 0 failed.
-Search checks: 7 passed, 0 failed.
-All three Python directories passed compileall.
+SOURCE AUDIT
+------------
+- 01_bayesian_networks/lab_sheet.pdf: 11 pages read.
+- 02_logic_hands_on/logic_lab_ex.pdf: 14 pages read.
+- 02_logic_hands_on/planning_lab_revised.pdf: 16 pages read.
+- No Search lab question-sheet PDF is present in 03_search_hands_on in the current branch tree. The detailed Search submission DOCX was inspected as the available substitute, but exact question-sheet verification remains unconfirmed.
 
-KEY REPRODUCED OUTPUTS
-----------------------
-Warehouse STRIPS plan:
+TEST COMMANDS
+-------------
+  cd 01_bayesian_networks && python3 -m unittest -v test_language_models.py
+  cd 01_bayesian_networks && python3 run_lab.py
+  cd 02_logic_hands_on && python3 test_planner.py
+  cd 02_logic_hands_on && python3 planner.py
+  cd 03_search_hands_on && python3 test_search.py
+  cd 03_search_hands_on && python3 search_agent.py
+
+LATEST LOCAL TEST SUMMARY
+-------------------------
+Bayesian unit tests: 7 passed, 0 failed. Raw output: 01_bayesian_networks/test_results.txt.
+Logical-planning checks: 12 passed, 0 failed. Raw output: 02_logic_hands_on/test_results.txt.
+Search checks: 9 passed, 0 failed. Raw output: 03_search_hands_on/test_results.txt.
+compileall completed successfully for all three Python lab folders.
+
+BAYESIAN MEASUREMENTS
+---------------------
+20 sampled outputs per model:
+  First-order: 10 distinct outputs.
+  Second-order: 6 distinct outputs.
+Five greedy runs per model:
+  First-order: 1 distinct output; strict argmax cycles and each run is capped at 12 tokens.
+  Second-order: 1 distinct complete output, reaching END.
+  First-order non-zero conditional-probability entries: 17.
+  Second-order: 18 trigram-successor entries + 1 initial-token probability = 19.
+  Second-order context universe: 110 possible, 14 observed, 96 unobserved.
+
+LOGICAL PLANNING MEASUREMENTS
+-----------------------------
+Original warehouse plan:
   PickUp(package,a) -> Move(a,b) -> Move(b,c) -> Drop(package,c)
   4 actions.
-
-Locked-door shortest plan:
+Revised locked-door shortest plan:
   PickKey -> Move(A,B) -> Unlock -> Move(B,C)
   4 actions.
-Without PickKey: no plan.
-Invalid proposed plan Move(A,B) -> Unlock -> Move(B,C):
-  first failure is step 2 (Unlock), missing precondition has(key).
+Removing PickKey: no plan.
+Invalid Move(A,B) -> Unlock -> Move(B,C):
+  first failure at step 2 (Unlock), missing HasKey.
+Revised candidate plan validates, reaches At(C), and matches BFS length 4.
+Exactly one At(A)/At(B)/At(C) proposition holds in every state in the returned trace.
 
-Bayesian model accounting:
-  First-order non-zero conditional probabilities: 17.
-  Second-order trigram successors: 18.
-  Second-order initial-token distribution: 1.
-  Second-order total non-zero probabilities: 19.
-  Second-order possible contexts: 110.
-  Second-order observed contexts: 14.
-  Second-order unobserved contexts: 96.
-
-Original warehouse search map:
-  BFS: 40 moves, 64 evaluated states.
-  A* Manhattan: 40 moves, 64 evaluated states.
-  A* h=0: 40 moves, 64 evaluated states.
-  A* Euclidean: 40 moves, 64 evaluated states.
-  A* 2x Manhattan: 40 moves, 67 evaluated states.
-
-Other search maps:
-  Trivial map: 1 move.
-  No-solution map: no path, 9 evaluated states.
-  Alternative-path map: shortest path of 7 moves (A* 14 evaluated; BFS 18).
+SEARCH HEURISTIC EXPERIMENTS
+----------------------------
+Path length / states expanded, original map:
+  BFS: 40 / 64
+  h=0: 40 / 64
+  Euclidean: 40 / 64
+  Manhattan: 40 / 64
+  2x Manhattan: 40 / 67
+  5x Manhattan: 40 / 84
+Branching map:
+  BFS: 7 / 18
+  h=0: 7 / 18
+  Euclidean: 7 / 14
+  Manhattan: 7 / 14
+  2x Manhattan: 7 / 14
+  5x Manhattan: 9 / 11 (valid but not shortest)
+Other maps:
+  Trivial: 1 move / 2 evaluated states.
+  Unreachable: no path / 9 evaluated states.
 
 Expansion convention:
-  Non-stale frontier removals evaluated; goal included; A* re-expansions count if a lower g-score is found.
+  Count each non-stale frontier removal evaluated, including the terminal goal. A* re-expansions after a strictly improved g-score count again.
 
-The DOCX submission reports were not modified. The revised locked-door and heuristic experiment evidence is provided in adjacent Markdown supplements because the GitHub text-file update action does not safely replace binary DOCX files.
+The original DOCX submission reports are retained unchanged. New Markdown supplements and captured run/test evidence are stored beside the relevant code. See TASK_AUDIT.md for the sheet-by-sheet coverage and limitations.
