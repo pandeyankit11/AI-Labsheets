@@ -1,6 +1,6 @@
 # AI Labsheets
 
-Laboratory assignments, implementations, independent tests, generated evidence, and submission reports for the Artificial Intelligence course.
+Laboratory question sheets, implementations, independent tests, generated evidence, and written answers for the Artificial Intelligence course.
 
 ## 01. Bayesian Networks and Autoregressive Language Models
 
@@ -22,9 +22,11 @@ Directory: `02_logic_hands_on/`
 
 Directory: `03_search_hands_on/`
 
-- BFS and A* on the original warehouse map and three additional maps.
+- The Search question sheet is `AI_Lab_Search_AStar_Submission.docx` (Tasks 0–9).
+- BFS and A* on the original warehouse map and additional edge-case/alternative-route maps.
 - Exact start/goal marker validation and consistent expansion-event counting.
 - Five heuristic variants on the original and branching maps.
+- Written answers and LLM prompt/evaluation: `search_answers.md`.
 - Evidence: `heuristic_experiments.md`, `search_output.txt`, and `test_results.txt`.
 
 ## Run the checks
@@ -43,6 +45,6 @@ python3 test_search.py
 python3 search_agent.py
 ```
 
-`verification_results.txt` records the test counts and measured outcomes. `TASK_AUDIT.md` maps available question sheets and submission reports to implementations and deliverables.
+`verification_results.txt` records the test counts and measured outcomes. `TASK_AUDIT.md` maps each available question sheet to implementations and deliverables.
 
-The original DOCX submission reports are preserved. The Search question-sheet PDF is not present in this branch, so source-level Search task verification remains conditional on that file being added.
+The Search DOCX question sheet and original Logic submission report are preserved unchanged.
