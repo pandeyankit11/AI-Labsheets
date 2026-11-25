@@ -44,7 +44,20 @@ SECOND-ORDER SAMPLING (20 sentences, seed=42)
 19. the dog ran to the park
 20. the cat sat on the rug
 
-GREEDY EXAMPLES
+FIRST-ORDER GREEDY (5 runs; deterministic; max_tokens=12)
 ------------------------------------------------------------
-First-order greedy:  the cat sat on the cat sat on the cat sat on
-Second-order greedy: the cat sat on the mat
+01. the cat sat on the cat sat on the cat sat on
+02. the cat sat on the cat sat on the cat sat on
+03. the cat sat on the cat sat on the cat sat on
+04. the cat sat on the cat sat on the cat sat on
+05. the cat sat on the cat sat on the cat sat on
+
+SECOND-ORDER GREEDY (5 runs; deterministic)
+------------------------------------------------------------
+01. the cat sat on the mat
+02. the cat sat on the mat
+03. the cat sat on the mat
+04. the cat sat on the mat
+05. the cat sat on the mat
+
+NOTE: Greedy decoding is deterministic with the fixed tie-breaking order. The first-order model loops and is capped at 12 tokens.
