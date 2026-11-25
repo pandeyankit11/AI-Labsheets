@@ -1,0 +1,16 @@
+Test 1 PASSED: both find 40 moves and evaluate 64 states
+Test 2 PASSED: one-move solution; 2 states evaluated
+Test 3 PASSED: no path; 9 states evaluated
+Test 4 PASSED: both find 7 moves; A* evaluated 14, BFS evaluated 18 states
+Test 5 PASSED: parser rejects missing or duplicate S/G markers
+Test 6 PASSED: all five heuristic variants ran on the original map
+  Zero heuristic (h=0): path=40, expanded=64
+  Euclidean distance: path=40, expanded=64
+  Manhattan distance: path=40, expanded=64
+  Manhattan x 2: path=40, expanded=67
+  Manhattan x 5: path=40, expanded=84
+Test 7 PASSED: branching map shows x5 Manhattan returns a valid but suboptimal 9-move path after 11 expansions
+Test 8 PASSED: BFS and A* both count the terminal goal as expanded
+Test 9 PASSED: zero and Euclidean heuristics preserve BFS optimality
+
+All independent search tests passed.
